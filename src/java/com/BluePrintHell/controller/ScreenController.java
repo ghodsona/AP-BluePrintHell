@@ -1,5 +1,6 @@
 package com.BluePrintHell.controller;
 
+import com.BluePrintHell.view.GameScreenView;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -29,10 +30,9 @@ public class ScreenController {
 
         if (cssUrl != null) {
             scene.getStylesheets().add(cssUrl.toExternalForm());
-        } else {
-            // اگر این پیام را در کنسول می‌بینید، یعنی فایل پیدا نشده
-            System.err.println("Warning: Stylesheet not found at " + cssPath);
         }
+
+
 
         stage.setScene(scene);
         stage.setFullScreen(true);
@@ -65,11 +65,19 @@ public class ScreenController {
     }
     public void activate(Screen screen) {
         if (screen == null) return;
-        Parent screenNode = screenCache.get(screen.name());
-        if (screenNode == null) {
-            System.err.println("Error: Screen '" + screen.name() + "' was not loaded.");
-            return;
+        if (screen == Screen.GAME) {
+            // اگر صفحه بازی بود، آن را به صورت دستی می‌سازیم
+            GameController gameController = new GameController();
+            GameScreenView gameView = new GameScreenView(gameController);
+            gameController.initializeGame(gameView); // کنترلر را با View جدید راه‌اندازی می‌کنیم
+            root.getChildren().setAll(gameView);
+        } else {
+            Parent screenNode = screenCache.get(screen.name());
+            if (screenNode == null) {
+                System.err.println("Error: Screen '" + screen.name() + "' was not loaded.");
+                return;
+            }
+            root.getChildren().setAll(screenNode);
         }
-        root.getChildren().setAll(screenNode);
     }
 }

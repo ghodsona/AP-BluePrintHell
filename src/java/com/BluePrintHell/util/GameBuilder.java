@@ -54,6 +54,7 @@ public class GameBuilder {
             PortShape shape = PortShape.valueOf(portData.getShape().toUpperCase());
             Port newPort = new Port(portData.getId(), system, PortType.INPUT, shape);
             system.getInputPorts().add(newPort);
+            System.out.println("DEBUG: Created INPUT port '" + newPort.getId() + "' for system '" + system.getId() + "'");
         }
 
         // پورت‌های خروجی
@@ -61,6 +62,7 @@ public class GameBuilder {
             PortShape shape = PortShape.valueOf(portData.getShape().toUpperCase());
             Port newPort = new Port(portData.getId(), system, PortType.OUTPUT, shape);
             system.getOutputPorts().add(newPort);
+            System.out.println("DEBUG: Created OUTPUT port '" + newPort.getId() + "' for system '" + system.getId() + "'");
         }
     }
 }

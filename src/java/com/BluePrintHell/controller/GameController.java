@@ -1,10 +1,12 @@
 package com.BluePrintHell.controller;
 
 import com.BluePrintHell.GameManager;
+import com.BluePrintHell.model.Connection;
 import com.BluePrintHell.model.GameState;
 import com.BluePrintHell.model.Port;
 import com.BluePrintHell.model.PortShape;
 import com.BluePrintHell.model.network.NetworkSystem;
+import com.BluePrintHell.view.GameScreenView;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,49 +14,58 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.scene.layout.AnchorPane;
 
-public class GameController implements Initializable {
+public class GameController {
 
-    // --- FXML Components ---
-    @FXML
-    private AnchorPane canvasContainer;
-    @FXML
     private Canvas gameCanvas;
-    @FXML
     private Label coinsLabel;
-    @FXML
     private Label wireLengthLabel;
-    @FXML
     private Label packetLossLabel;
-
     private GraphicsContext gc;
     private AnimationTimer gameLoop;
     private GameState gameState;
+
+    private NetworkSystem selectedSystem = null; // سیستمی که برای جابجایی انتخاب شده
+    private double offsetX; // فاصله افقی کلیک ماوس تا گوشه سیستم
+    private double offsetY;
+
+    private boolean isDrawingWire = false; // آیا در حال کشیدن سیم هستیم؟
+    private Port wireStartPort = null; // پورتی که سیم‌کشی از آن شروع شده
+    private Point2D liveWireEndPoint = null;
 
     // ثوابت برای ابعاد گرافیکی
     private static final double SYSTEM_WIDTH = 120;
     private static final double SYSTEM_HEIGHT = 80;
     private static final double PORT_SIZE = 12;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    // این متد جایگزین initialize می‌شود
+    public void initializeGame(GameScreenView view) {
+        // ۱. گرفتن اجزای گرافیکی از View
+        this.gameCanvas = view.getGameCanvas();
+        this.coinsLabel = view.getCoinsLabel();
+        this.wireLengthLabel = view.getWireLengthLabel();
+        this.packetLossLabel = view.getPacketLossLabel();
+
+        // ۲. گرفتن وضعیت بازی از GameManager
         this.gameState = GameManager.getInstance().getCurrentGameState();
         if (this.gameState == null) {
-            System.err.println("FATAL: GameState is null. Could not start game.");
+            System.err.println("FATAL: GameState is null.");
             return;
         }
-        System.out.println("3. GameController initialized with GameState containing " + this.gameState.getSystems().size() + " systems.");
 
-        // GraphicsContext را برای نقاشی روی Canvas آماده می‌کنیم
-        gc = gameCanvas.getGraphicsContext2D();
+        // ۳. راه‌اندازی بقیه موارد
+        this.gc = gameCanvas.getGraphicsContext2D();
 
-        gameCanvas.widthProperty().bind(canvasContainer.widthProperty());
-        gameCanvas.heightProperty().bind(canvasContainer.heightProperty());
+        gameCanvas.setOnMousePressed(this::onMousePressed);
+        gameCanvas.setOnMouseDragged(this::onMouseDragged);
+        gameCanvas.setOnMouseReleased(this::onMouseReleased);
+        gameCanvas.setOnMouseMoved(this::onMouseMoved); // <<< این خط جدید است
 
         calculateInitialPositions();
         setupGameLoop();
@@ -62,6 +73,7 @@ public class GameController implements Initializable {
     }
 
     private void calculateInitialPositions() {
+        System.out.println("DEBUG: Calculating initial port positions..."); // این خط را اضافه کنید
         for (NetworkSystem system : gameState.getSystems()) {
             double sysX = system.getPosition().getX();
             double sysY = system.getPosition().getY();
@@ -73,6 +85,7 @@ public class GameController implements Initializable {
                 double portX = sysX - (PORT_SIZE / 2);
                 double portY = sysY + (SYSTEM_HEIGHT * (i + 1) / (inputPortCount + 1)) - (PORT_SIZE / 2);
                 port.setPosition(new Point2D(portX, portY));
+                System.out.println(" -> Set position for INPUT port '" + port.getId() + "'"); // این خط
             }
 
             // محاسبه موقعیت پورت‌های خروجی (سمت راست)
@@ -82,7 +95,110 @@ public class GameController implements Initializable {
                 double portX = sysX + SYSTEM_WIDTH - (PORT_SIZE / 2);
                 double portY = sysY + (SYSTEM_HEIGHT * (i + 1) / (outputPortCount + 1)) - (PORT_SIZE / 2);
                 port.setPosition(new Point2D(portX, portY));
+                System.out.println(" -> Set position for OUTPUT port '" + port.getId() + "'"); // این خط
             }
+        }
+    }
+
+    private void updatePortPositions(NetworkSystem system) {
+        double sysX = system.getPosition().getX();
+        double sysY = system.getPosition().getY();
+
+        // محاسبه موقعیت پورت‌های ورودی (سمت چپ)
+        int inputPortCount = system.getInputPorts().size();
+        for (int i = 0; i < inputPortCount; i++) {
+            Port port = system.getInputPorts().get(i);
+            double portX = sysX - (PORT_SIZE / 2);
+            double portY = sysY + (SYSTEM_HEIGHT * (i + 1) / (inputPortCount + 1)) - (PORT_SIZE / 2);
+            port.setPosition(new Point2D(portX, portY));
+        }
+
+        // محاسبه موقعیت پورت‌های خروجی (سمت راست)
+        int outputPortCount = system.getOutputPorts().size();
+        for (int i = 0; i < outputPortCount; i++) {
+            Port port = system.getOutputPorts().get(i);
+            double portX = sysX + SYSTEM_WIDTH - (PORT_SIZE / 2);
+            double portY = sysY + (SYSTEM_HEIGHT * (i + 1) / (outputPortCount + 1)) - (PORT_SIZE / 2);
+            port.setPosition(new Point2D(portX, portY));
+        }
+    }
+
+    private void onMousePressed(MouseEvent event) {
+        // اگر در حال کشیدن سیم هستیم (این کلیک دوم است)
+        if (isDrawingWire) {
+            Port endPort = getPortAt(event.getX(), event.getY());
+
+            // بررسی شرایط برای اتصال موفق
+            if (endPort != null && !endPort.isConnected() &&
+                    endPort.getParentSystem() != wireStartPort.getParentSystem() &&
+                    endPort.getType() != wireStartPort.getType()) {
+
+                // TODO: چک کردن محدودیت طول سیم
+
+                // اتصال موفق: یک Connection جدید بساز
+                Connection newConnection = new Connection(wireStartPort, endPort);
+                gameState.addConnection(newConnection);
+                wireStartPort.connect(newConnection);
+                endPort.connect(newConnection);
+
+                System.out.println("Wire connected successfully!");
+
+            } else {
+                // اتصال ناموفق یا لغو
+                System.out.println("Wiring canceled.");
+            }
+            // در هر صورت، عملیات سیم‌کشی تمام می‌شود
+            isDrawingWire = false;
+            wireStartPort = null;
+
+        } else { // اگر در حال کشیدن سیم نیستیم (این کلیک اول است)
+            Port clickedPort = getPortAt(event.getX(), event.getY());
+
+            // اگر روی یک پورت خالی کلیک شده
+            if (clickedPort != null && !clickedPort.isConnected()) {
+                isDrawingWire = true;
+                wireStartPort = clickedPort;
+                liveWireEndPoint = new Point2D(event.getX(), event.getY());
+
+            } else { // اگر روی پورت کلیک نشده، منطق جابجایی سیستم را اجرا کن
+                // (این کد همان کد قبلی برای درگ اند دراپ است)
+                for (int i = gameState.getSystems().size() - 1; i >= 0; i--) {
+                    NetworkSystem system = gameState.getSystems().get(i);
+                    double sysX = system.getPosition().getX();
+                    double sysY = system.getPosition().getY();
+                    if (event.getX() >= sysX && event.getX() <= sysX + SYSTEM_WIDTH &&
+                            event.getY() >= sysY && event.getY() <= sysY + SYSTEM_HEIGHT) {
+                        selectedSystem = system;
+                        offsetX = event.getX() - sysX;
+                        offsetY = event.getY() - sysY;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    private void onMouseDragged(MouseEvent event) {
+        // فقط اگر یک سیستم قبلاً انتخاب شده باشد، این کد اجرا می‌شود
+        if (selectedSystem != null) {
+            // موقعیت جدید سیستم را بر اساس موقعیت ماوس و آفست محاسبه می‌کنیم
+            double newX = event.getX() - offsetX;
+            double newY = event.getY() - offsetY;
+            selectedSystem.setPosition(new Point2D(newX, newY));
+
+            // --- نکته بسیار مهم: آپدیت کردن موقعیت پورت‌ها ---
+            updatePortPositions(selectedSystem);
+        }
+    }
+
+    private void onMouseReleased(MouseEvent event) {
+        // با رها شدن دکمه ماوس، دیگر هیچ سیستمی انتخاب شده نیست
+        selectedSystem = null;
+    }
+
+    private void onMouseMoved(MouseEvent event) {
+        if (isDrawingWire) {
+            liveWireEndPoint = new Point2D(event.getX(), event.getY());
         }
     }
 
@@ -116,18 +232,50 @@ public class GameController implements Initializable {
         }
     }
 
-    // ... در داخل کلاس GameController.java
+    // در فایل GameController.java
+
+    // در فایل GameController.java
 
     private void renderGame() {
-        System.out.println("4. Rendering frame...");
         gc.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
         if (gameState == null) return;
 
-        // TODO: نقاشی سیم‌ها (Connections) در قدم بعدی اینجا خواهد بود
+        // ==========================================================
+        // === بخش جدید: نقاشی سیم‌های دائمی و پیش‌نمایش ===
+        // ==========================================================
 
-        // نقاشی تمام سیستم‌ها و پورت‌هایشان
+        // ۱. نقاشی سیم‌های دائمی (اتصالات برقرار شده)
+        gc.setStroke(Color.web("#7a7f8a", 0.7)); // رنگ خاکستری با کمی شفافیت
+        gc.setLineWidth(4);
+        for (Connection connection : gameState.getConnections()) {
+            Point2D start = connection.getStartPort().getPosition();
+            Point2D end = connection.getEndPort().getPosition();
+            // مرکز پورت‌ها را به هم وصل می‌کنیم
+            gc.strokeLine(start.getX() + PORT_SIZE / 2, start.getY() + PORT_SIZE / 2,
+                    end.getX() + PORT_SIZE / 2, end.getY() + PORT_SIZE / 2);
+        }
+
+        // ۲. نقاشی سیم پیش‌نمایش (اگر در حال کشیدن سیم باشیم)
+        if (isDrawingWire && wireStartPort != null && liveWireEndPoint != null) {
+            gc.setStroke(Color.web("#00f0ff", 0.9)); // رنگ آبی نئونی
+            gc.setLineWidth(3);
+            Point2D start = wireStartPort.getPosition();
+            // TODO: منطق محدودیت طول سیم را اینجا پیاده کنید
+            gc.strokeLine(start.getX() + PORT_SIZE / 2, start.getY() + PORT_SIZE / 2,
+                    liveWireEndPoint.getX(), liveWireEndPoint.getY());
+        }
+
+        // ==========================================================
+        // === پایان بخش جدید ===
+        // ==========================================================
+
+        // ۱. ابتدا تمام بدنه‌های سیستم‌ها را نقاشی کن
         for (NetworkSystem system : gameState.getSystems()) {
             drawSystem(system);
+        }
+
+        // ۲. سپس تمام پورت‌ها را روی سیستم‌ها نقاشی کن
+        for (NetworkSystem system : gameState.getSystems()) {
             for (Port port : system.getInputPorts()) {
                 drawPort(port);
             }
@@ -136,12 +284,8 @@ public class GameController implements Initializable {
             }
         }
 
-        // TODO: نقاشی پکت‌ها (Packets) در قدم‌های بعدی اینجا خواهد بود
+        // TODO: نقاشی پکت‌ها (Packets)
     }
-
-    /**
-     * یک سیستم شبکه را با استایل مورد نظر نقاشی می‌کند.
-     */
     private void drawSystem(NetworkSystem system) {
         double x = system.getPosition().getX();
         double y = system.getPosition().getY();
@@ -161,9 +305,6 @@ public class GameController implements Initializable {
         gc.strokeLine(x + 5, y + 5, x + SYSTEM_WIDTH - 5, y + 5);
     }
 
-    /**
-     * یک پورت را با شکل، رنگ و افکت درخشش نقاشی می‌کند.
-     */
     private void drawPort(Port port) {
         if (port.getPosition() == null) return;
 
@@ -173,7 +314,6 @@ public class GameController implements Initializable {
 
         // افکت درخشش (Glow)
         gc.setEffect(new javafx.scene.effect.DropShadow(10, portColor));
-
         gc.setFill(portColor);
 
         // نقاشی شکل پورت بر اساس نوع آن
@@ -193,9 +333,36 @@ public class GameController implements Initializable {
         gc.setEffect(null);
     }
 
-    /**
-     * بر اساس شکل پورت، رنگ مناسب را برمی‌گرداند.
-     */
+    // در فایل GameController.java
+
+    private Port getPortAt(double x, double y) {
+        for (NetworkSystem system : gameState.getSystems()) {
+            // چک کردن تمام پورت‌ها (ورودی و خروجی)
+            for (Port port : system.getInputPorts()) {
+                // ۱. محاسبه مرکز پورت
+                Point2D portCenter = new Point2D(
+                        port.getPosition().getX() + PORT_SIZE / 2,
+                        port.getPosition().getY() + PORT_SIZE / 2
+                );
+                // ۲. بررسی فاصله از مرکز
+                if (portCenter.distance(x, y) < PORT_SIZE / 2) {
+                    return port;
+                }
+            }
+            for (Port port : system.getOutputPorts()) {
+                // ۱. محاسبه مرکز پورت
+                Point2D portCenter = new Point2D(
+                        port.getPosition().getX() + PORT_SIZE / 2,
+                        port.getPosition().getY() + PORT_SIZE / 2
+                );
+                // ۲. بررسی فاصله از مرکز
+                if (portCenter.distance(x, y) < PORT_SIZE / 2) {
+                    return port;
+                }
+            }
+        }
+        return null;
+    }
     private Color getColorForShape(PortShape shape) {
         switch (shape) {
             case SQUARE:
@@ -206,22 +373,19 @@ public class GameController implements Initializable {
                 return Color.WHITE;
         }
     }
-    // --- FXML Action Methods ---
-    @FXML
-    private void onShopClicked() {
+
+    public void onShopClicked() {
         System.out.println("Opening shop...");
         ScreenController.getInstance().activate(Screen.SHOP);
     }
 
-    @FXML
-    private void onPauseClicked() {
+    public void onPauseClicked() {
         System.out.println("Game paused/resumed!");
         // TODO: منطق توقف و ادامه حلقه بازی را اینجا پیاده‌سازی کنید
         // gameLoop.stop() or gameLoop.start()
     }
 
-    @FXML
-    private void onMenuClicked() {
+    public void onMenuClicked() {
         System.out.println("Returning to Main Menu...");
         ScreenController.getInstance().activate(Screen.MAIN_MENU);
     }

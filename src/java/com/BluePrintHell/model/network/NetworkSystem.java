@@ -34,4 +34,8 @@ public abstract class NetworkSystem {
     public Point2D getPosition() { return position; }
     public List<Port> getInputPorts() { return inputPorts; }
     public List<Port> getOutputPorts() { return outputPorts; }
+
+    public void setPosition(Point2D position) {
+        this.position = position;
+    }
 }

@@ -28,6 +28,12 @@ public class GameState {
         connections.add(connection);
     }
 
+    public void removeConnection(Connection connection) {
+        if (connection != null) {
+            connections.remove(connection);
+        }
+    }
+
     // TODO: Add methods to update the game state each frame
     public void update(double deltaTime) {
         for (Packet packet : packets) {
