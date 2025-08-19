@@ -1,0 +1,47 @@
+{
+  "levelNumber": 1,
+  "levelName": "The First Connection",
+  "initialWireLength": 1000.0,
+  "initialCoins": 5,
+  "systems": [
+    {
+      "id": "ref_A",
+      "type": "REFERENCE",
+      "x": 100,
+      "y": 200,
+      "inputPorts": [],
+      "outputPorts": [
+        { "id": "ref_A_out1", "shape": "SQUARE" }
+      ]
+    },
+    {
+      "id": "sys_B",
+      "type": "NORMAL",
+      "x": 400,
+      "y": 300,
+      "inputPorts": [
+        { "id": "sys_B_in1", "shape": "SQUARE" }
+      ],
+      "outputPorts": [
+        { "id": "sys_B_out1", "shape": "SQUARE" }
+      ]
+    },
+    {
+      "id": "ref_C",
+      "type": "REFERENCE",
+      "x": 700,
+      "y": 200,
+      "inputPorts": [
+        { "id": "ref_C_in1", "shape": "SQUARE" }
+      ],
+      "outputPorts": []
+    }
+  ],
+  "spawnEvents": [
+    {
+      "spawnTime": 2.0,
+      "sourceSystemId": "ref_A",
+      "packetType": "SQUARE_MESSENGER"
+    }
+  ]
+}

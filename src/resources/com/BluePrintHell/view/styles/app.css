@@ -1,0 +1,45 @@
+/* --- استایل کلی و پس‌زمینه با طرح گرید --- */
+/* --- استایل کلی و پس‌زمینه با طرح گرید (نسخه اصلاح شده) --- */
+.root-pane {
+    -fx-background-color: #1a1a1e; /* رنگ پس‌زمینه تیره */
+
+    -fx-background-image:
+            linear-gradient(to bottom, rgba(0, 240, 255, 0.07) 0%, rgba(0, 240, 255, 0.07) 1px, transparent 1px, transparent 100%),
+            linear-gradient(to right, rgba(0, 240, 255, 0.07) 0%, rgba(0, 240, 255, 0.07) 1px, transparent 1px, transparent 100%);
+
+    -fx-background-size: 30px 30px; /* اندازه خانه‌های گرید */
+}
+
+/* --- استایل عنوان بازی --- */
+.title-label {
+    -fx-font-family: "Orbitron Bold";
+    -fx-font-size: 48px;
+    -fx-text-fill: #00f0ff; /* آبی نئونی */
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.7), 15, 0.0, 0, 0); /* افکت درخشش (Glow) */
+}
+
+/* --- استایل دکمه‌ها (حالت هولوگرافیک) --- */
+.button {
+    -fx-font-family: "Orbitron";
+    -fx-font-size: 16px;
+    -fx-text-fill: #00f0ff;
+    -fx-background-color: transparent; /* پس‌زمینه شفاف */
+    -fx-border-color: #00f0ff; /* حاشیه نئونی */
+    -fx-border-width: 2px;
+    -fx-pref-width: 200px;
+    -fx-pref-height: 40px;
+    -fx-background-insets: 0;
+}
+
+/* --- افکت هاور برای دکمه‌ها --- */
+.button:hover {
+    -fx-background-color: #00f0ff; /* پس‌زمینه پر می‌شود */
+    -fx-text-fill: #1a1a1e; /* متن تیره می‌شود */
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.5), 10, 0.0, 0, 0);
+}
+
+/* --- افکت فشرده شدن دکمه --- */
+.button:pressed {
+    -fx-background-color: #00a0b3; /* کمی تیره‌تر */
+}
