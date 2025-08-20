@@ -28,6 +28,7 @@ public class GameScreenView extends BorderPane {
         Button shopButton = new Button("Shop");
         Button pauseButton = new Button("Pause");
         Button menuButton = new Button("Menu");
+        Button runButton = new Button("Run"); // << دکمه جدید
 
         // ۲. اعمال استایل‌ها
         this.getStyleClass().add("root-pane");
@@ -37,11 +38,13 @@ public class GameScreenView extends BorderPane {
         shopButton.getStyleClass().add("button");
         pauseButton.getStyleClass().add("button");
         menuButton.getStyleClass().add("button");
+        runButton.getStyleClass().add("button"); // << استایل دکمه
 
         // ۳. اتصال اکشن دکمه‌ها به متدهای کنترلر
         shopButton.setOnAction(e -> controller.onShopClicked());
         pauseButton.setOnAction(e -> controller.onPauseClicked());
         menuButton.setOnAction(e -> controller.onMenuClicked());
+        runButton.setOnAction(e -> controller.onRunClicked());
 
         // ۴. چیدمان اجزا
         // HUD در بالا
@@ -52,7 +55,7 @@ public class GameScreenView extends BorderPane {
         this.setTop(hud);
 
         // دکمه‌ها در سمت راست
-        VBox controls = new VBox(15, shopButton, pauseButton, menuButton);
+        VBox controls = new VBox(15, runButton, shopButton, pauseButton, menuButton);
         controls.setPadding(new Insets(20));
         controls.setAlignment(Pos.TOP_CENTER);
         this.setRight(controls);

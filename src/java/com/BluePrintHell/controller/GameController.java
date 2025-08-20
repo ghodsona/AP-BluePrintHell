@@ -1,11 +1,16 @@
 package com.BluePrintHell.controller;
 
 import com.BluePrintHell.GameManager;
+import com.BluePrintHell.GamePhase;
 import com.BluePrintHell.model.Connection;
 import com.BluePrintHell.model.GameState;
 import com.BluePrintHell.model.Port;
 import com.BluePrintHell.model.PortShape;
+import com.BluePrintHell.model.leveldata.SpawnEventData;
 import com.BluePrintHell.model.network.NetworkSystem;
+import com.BluePrintHell.model.packets.Packet;
+import com.BluePrintHell.model.packets.SquarePacket;
+import com.BluePrintHell.model.packets.TrianglePacket;
 import com.BluePrintHell.view.GameScreenView;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
@@ -18,6 +23,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 import javafx.scene.layout.AnchorPane;
 
@@ -30,6 +36,7 @@ public class GameController {
     private GraphicsContext gc;
     private AnimationTimer gameLoop;
     private GameState gameState;
+    private GamePhase currentPhase = GamePhase.DESIGN;
 
     private NetworkSystem selectedSystem = null; // سیستمی که برای جابجایی انتخاب شده
     private double offsetX; // فاصله افقی کلیک ماوس تا گوشه سیستم
@@ -123,55 +130,72 @@ public class GameController {
         }
     }
 
+    // در فایل GameController.java
+
     private void onMousePressed(MouseEvent event) {
-        // اگر در حال کشیدن سیم هستیم (این کلیک دوم است)
-        if (isDrawingWire) {
-            Port endPort = getPortAt(event.getX(), event.getY());
+        if (currentPhase == GamePhase.DESIGN) {// --- حالت ۱: اگر در حال کشیدن سیم هستیم (این یعنی کلیک دوم) ---
+            if (isDrawingWire) {
+                Port endPort = getPortAt(event.getX(), event.getY());
 
-            // بررسی شرایط برای اتصال موفق
-            if (endPort != null && !endPort.isConnected() &&
-                    endPort.getParentSystem() != wireStartPort.getParentSystem() &&
-                    endPort.getType() != wireStartPort.getType()) {
+                // بررسی می‌کنیم آیا کلیک دوم روی یک پورت معتبر برای اتصال بوده است
+                if (endPort != null && !endPort.isConnected() &&
+                        endPort.getParentSystem() != wireStartPort.getParentSystem() &&
+                        endPort.getType() != wireStartPort.getType()) {
 
-                // TODO: چک کردن محدودیت طول سیم
+                    // TODO: چک کردن محدودیت طول سیم
 
-                // اتصال موفق: یک Connection جدید بساز
-                Connection newConnection = new Connection(wireStartPort, endPort);
-                gameState.addConnection(newConnection);
-                wireStartPort.connect(newConnection);
-                endPort.connect(newConnection);
+                    // اتصال موفق: یک Connection جدید بساز
+                    Connection newConnection = new Connection(wireStartPort, endPort);
+                    gameState.addConnection(newConnection);
+                    wireStartPort.connect(newConnection);
+                    endPort.connect(newConnection);
+                    System.out.println("Wire connected successfully!");
 
-                System.out.println("Wire connected successfully!");
+                } else {
+                    // اگر کلیک روی پورت معتبر نبود (مثلا فضای خالی، پورت اشتباه یا همان پورت اول)، عملیات لغو می‌شود
+                    System.out.println("Wiring canceled.");
+                }
 
-            } else {
-                // اتصال ناموفق یا لغو
-                System.out.println("Wiring canceled.");
+                // در هر صورت، عملیات سیم‌کشی در اینجا به پایان می‌رسد
+                isDrawingWire = false;
+                wireStartPort = null;
+
             }
-            // در هر صورت، عملیات سیم‌کشی تمام می‌شود
-            isDrawingWire = false;
-            wireStartPort = null;
+            // --- حالت ۲: اگر در حال کشیدن سیم نیستیم (این یعنی کلیک اول) ---
+            else {
+                Port clickedPort = getPortAt(event.getX(), event.getY());
 
-        } else { // اگر در حال کشیدن سیم نیستیم (این کلیک اول است)
-            Port clickedPort = getPortAt(event.getX(), event.getY());
-
-            // اگر روی یک پورت خالی کلیک شده
-            if (clickedPort != null && !clickedPort.isConnected()) {
-                isDrawingWire = true;
-                wireStartPort = clickedPort;
-                liveWireEndPoint = new Point2D(event.getX(), event.getY());
-
-            } else { // اگر روی پورت کلیک نشده، منطق جابجایی سیستم را اجرا کن
-                // (این کد همان کد قبلی برای درگ اند دراپ است)
-                for (int i = gameState.getSystems().size() - 1; i >= 0; i--) {
-                    NetworkSystem system = gameState.getSystems().get(i);
-                    double sysX = system.getPosition().getX();
-                    double sysY = system.getPosition().getY();
-                    if (event.getX() >= sysX && event.getX() <= sysX + SYSTEM_WIDTH &&
-                            event.getY() >= sysY && event.getY() <= sysY + SYSTEM_HEIGHT) {
-                        selectedSystem = system;
-                        offsetX = event.getX() - sysX;
-                        offsetY = event.getY() - sysY;
-                        return;
+                // اگر روی یک پورت کلیک شده باشد
+                if (clickedPort != null) {
+                    // اگر پورت از قبل متصل بود، سیم متصل به آن را حذف کن
+                    if (clickedPort.isConnected()) {
+                        Connection connectionToRemove = clickedPort.getAttachedConnection();
+                        connectionToRemove.getStartPort().disconnect();
+                        connectionToRemove.getEndPort().disconnect();
+                        gameState.removeConnection(connectionToRemove);
+                        System.out.println("Wire removed.");
+                    }
+                    // اگر پورت خالی بود، عملیات کشیدن سیم را شروع کن
+                    else {
+                        isDrawingWire = true;
+                        wireStartPort = clickedPort;
+                        liveWireEndPoint = new Point2D(event.getX(), event.getY());
+                        System.out.println("Started drawing wire from port: " + clickedPort.getId());
+                    }
+                }
+                // اگر روی پورت کلیک نشده بود، منطق جابجایی سیستم را اجرا کن
+                else {
+                    for (int i = gameState.getSystems().size() - 1; i >= 0; i--) {
+                        NetworkSystem system = gameState.getSystems().get(i);
+                        double sysX = system.getPosition().getX();
+                        double sysY = system.getPosition().getY();
+                        if (event.getX() >= sysX && event.getX() <= sysX + SYSTEM_WIDTH &&
+                                event.getY() >= sysY && event.getY() <= sysY + SYSTEM_HEIGHT) {
+                            selectedSystem = system;
+                            offsetX = event.getX() - sysX;
+                            offsetY = event.getY() - sysY;
+                            return;
+                        }
                     }
                 }
             }
@@ -180,7 +204,7 @@ public class GameController {
 
     private void onMouseDragged(MouseEvent event) {
         // فقط اگر یک سیستم قبلاً انتخاب شده باشد، این کد اجرا می‌شود
-        if (selectedSystem != null) {
+        if ((selectedSystem != null) && (currentPhase == GamePhase.DESIGN)) {
             // موقعیت جدید سیستم را بر اساس موقعیت ماوس و آفست محاسبه می‌کنیم
             double newX = event.getX() - offsetX;
             double newY = event.getY() - offsetY;
@@ -215,8 +239,9 @@ public class GameController {
                 double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
                 lastUpdate = now;
 
-                // ۱. آپدیت کردن منطق بازی (حرکت پکت‌ها، برخوردها و ...)
-                updateGame(deltaTime);
+                if (currentPhase == GamePhase.SIMULATION) {
+                    updateGame(deltaTime);
+                }
 
                 // ۲. نقاشی کردن وضعیت جدید روی صفحه
                 renderGame();
@@ -229,16 +254,65 @@ public class GameController {
         // برای مثال: packet.move(deltaTime);
         if (gameState != null) {
             gameState.update(deltaTime);
+            System.out.println("DEBUG: Game Time is now: " + gameState.getGameTime());
+            handlePacketSpawning();
         }
     }
 
-    // در فایل GameController.java
+    private Packet createPacketFromType(String packetType, Point2D position) {
+        switch (packetType) {
+            case "SQUARE_MESSENGER":
+                return new SquarePacket(position);
+            case "TRIANGLE_MESSENGER":
+                return new TrianglePacket(position);
+            // TODO: انواع دیگر پکت‌ها در آینده اینجا اضافه می‌شوند
+            default:
+                System.err.println("Warning: Unknown packet type '" + packetType + "' in JSON.");
+                return null;
+        }
+    }
 
-    // در فایل GameController.java
+    private void handlePacketSpawning() {
+        // اگر هیچ رویدادی برای اجرا باقی نمانده، کاری برای انجام نیست.
+        if (gameState.getSpawnEvents().isEmpty()) {
+            return;
+        }
 
+        // به اولین رویداد در لیست نگاه می‌کنیم (فرض بر این است که لیست از قبل مرتب شده).
+        SpawnEventData nextEvent = gameState.getSpawnEvents().get(0);
+
+        // چک می‌کنیم آیا زمان تولید این پکت فرا رسیده است یا نه.
+        if (gameState.getGameTime() >= nextEvent.getSpawnTime()) {
+
+            // ۱. سیستم مبدا را بر اساس ID که در فایل JSON مشخص شده، پیدا می‌کنیم.
+            NetworkSystem sourceSystem = gameState.getSystems().stream()
+                    .filter(s -> s.getId().equals(nextEvent.getSourceSystemId()))
+                    .findFirst()
+                    .orElse(null);
+
+            // ۲. اگر سیستم مبدا پیدا شد، پکت را می‌سازیم.
+            if (sourceSystem != null) {
+                // از متد کمکی (Factory) برای ساخت نوع صحیح پکت استفاده می‌کنیم.
+                Packet newPacket = createPacketFromType(nextEvent.getPacketType(), new Point2D(0, 0)); // موقعیت اولیه مهم نیست.
+
+                if (newPacket != null) {
+                    // ۳. پکت ساخته شده را به بافر داخلی سیستم مبدا تحویل می‌دهیم.
+                    // خود سیستم در فریم‌های بعدی تصمیم می‌گیرد که چه زمانی آن را ارسال کند.
+                    sourceSystem.receivePacket(newPacket);
+                    System.out.println("Packet of type '" + nextEvent.getPacketType() + "' created and delivered to system '" + sourceSystem.getId() + "'");
+                }
+            } else {
+                System.err.println("Error: Could not find source system with ID: " + nextEvent.getSourceSystemId());
+            }
+
+            // ۴. رویداد انجام شده را از لیست حذف می‌کنیم تا دوباره اجرا نشود.
+            gameState.getSpawnEvents().remove(0);
+        }
+    }
     private void renderGame() {
         gc.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
         if (gameState == null) return;
+        System.out.println("DEBUG: Packets to render: " + gameState.getPackets().size());
 
         // ==========================================================
         // === بخش جدید: نقاشی سیم‌های دائمی و پیش‌نمایش ===
@@ -284,8 +358,12 @@ public class GameController {
             }
         }
 
-        // TODO: نقاشی پکت‌ها (Packets)
+        for (Packet packet : gameState.getPackets()) {
+            drawPacket(packet);
+        }
+
     }
+
     private void drawSystem(NetworkSystem system) {
         double x = system.getPosition().getX();
         double y = system.getPosition().getY();
@@ -303,6 +381,28 @@ public class GameController {
         gc.setStroke(Color.web("#00f0ff", 0.5)); // آبی نئونی با شفافیت
         gc.setLineWidth(3);
         gc.strokeLine(x + 5, y + 5, x + SYSTEM_WIDTH - 5, y + 5);
+    }
+
+    private void drawPacket(Packet packet) {
+        if (packet == null) return;
+
+        Point2D pos = packet.getPosition();
+        double size = 10; // اندازه پکت روی صفحه
+
+        // بر اساس نوع کلاس پکت، شکل متفاوتی رسم می‌کنیم
+        if (packet instanceof SquarePacket) {
+            gc.setFill(Color.LIGHTGREEN);
+            gc.fillRect(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
+        } else if (packet instanceof TrianglePacket) {
+            gc.setFill(Color.YELLOW);
+            double[] xPoints = {pos.getX(), pos.getX() + size, pos.getX() + size / 2};
+            double[] yPoints = {pos.getY() + size, pos.getY() + size, pos.getY()};
+            gc.fillPolygon(xPoints, yPoints, 3);
+        } else {
+            // برای انواع دیگر پکت که در آینده اضافه می‌شوند، یک دایره رسم کن
+            gc.setFill(Color.WHITE);
+            gc.fillOval(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
+        }
     }
 
     private void drawPort(Port port) {
@@ -332,8 +432,6 @@ public class GameController {
         // غیرفعال کردن افکت برای عناصر بعدی
         gc.setEffect(null);
     }
-
-    // در فایل GameController.java
 
     private Port getPortAt(double x, double y) {
         for (NetworkSystem system : gameState.getSystems()) {
@@ -388,5 +486,16 @@ public class GameController {
     public void onMenuClicked() {
         System.out.println("Returning to Main Menu...");
         ScreenController.getInstance().activate(Screen.MAIN_MENU);
+    }
+
+    public void onRunClicked() {
+        if (currentPhase == GamePhase.DESIGN) {
+            System.out.println("--- SIMULATION STARTED ---");
+            if (gameState != null) {
+                gameState.resetGameTime();
+            }
+            currentPhase = GamePhase.SIMULATION;
+            // TODO: در اینجا می‌توانید دکمه Run را غیرفعال کنید
+        }
     }
 }

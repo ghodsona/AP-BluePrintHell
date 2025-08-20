@@ -9,6 +9,8 @@ import com.BluePrintHell.model.network.NormalSystem;
 import com.BluePrintHell.model.network.ReferenceSystem;
 import javafx.geometry.Point2D;
 
+import java.util.ArrayList;
+
 public class GameBuilder {
 
     public static GameState buildFrom(LevelData data) {
@@ -23,14 +25,19 @@ public class GameBuilder {
         for (SystemData sysData : data.getSystems()) {
             Point2D position = new Point2D(sysData.getX(), sysData.getY());
             NetworkSystem newSystem = createSystemFromData(sysData.getId(), sysData.getType(), position);
-
-            // ۳. ساختن پورت‌های ورودی و خروجی برای هر سیستم
+            newSystem.setParentGameState(gameState);
             createPortsForSystem(newSystem, sysData);
-
             gameState.addSystem(newSystem);
         }
 
-        // TODO: در آینده، رویدادهای تولید پکت (spawnEvents) را هم به GameState اضافه می‌کنیم
+        // ==========================================================
+        // === این خط اصلاح شده و بسیار مهم است ===
+        // ==========================================================
+        // ۳. اضافه کردن رویدادهای تولید پکت به GameState
+        if (data.getSpawnEvents() != null) {
+            gameState.setSpawnEvents(new ArrayList<>(data.getSpawnEvents()));
+        }
+        // ==========================================================
 
         return gameState;
     }
