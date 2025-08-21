@@ -8,10 +8,11 @@
       "id": "ref_A",
       "type": "REFERENCE",
       "x": 100,
-      "y": 200,
+      "y": 150,
       "inputPorts": [],
       "outputPorts": [
-        { "id": "ref_A_out1", "shape": "SQUARE" }
+        { "id": "ref_A_out_sq", "shape": "SQUARE" },
+        { "id": "ref_A_out_tri", "shape": "TRIANGLE" }
       ]
     },
     {
@@ -20,19 +21,20 @@
       "x": 400,
       "y": 300,
       "inputPorts": [
-        { "id": "sys_B_in1", "shape": "SQUARE" }
+        { "id": "sys_B_in_sq", "shape": "SQUARE" }
       ],
       "outputPorts": [
-        { "id": "sys_B_out1", "shape": "SQUARE" }
+        { "id": "sys_B_out_tri", "shape": "TRIANGLE" }
       ]
     },
     {
       "id": "ref_C",
       "type": "REFERENCE",
       "x": 700,
-      "y": 200,
+      "y": 150,
       "inputPorts": [
-        { "id": "ref_C_in1", "shape": "SQUARE" }
+        { "id": "ref_C_in_sq", "shape": "SQUARE" },
+        { "id": "ref_C_in_tri", "shape": "TRIANGLE" }
       ],
       "outputPorts": []
     }
@@ -42,6 +44,11 @@
       "spawnTime": 2.0,
       "sourceSystemId": "ref_A",
       "packetType": "SQUARE_MESSENGER"
+    },
+    {
+      "spawnTime": 4.0,
+      "sourceSystemId": "ref_A",
+      "packetType": "TRIANGLE_MESSENGER"
     }
   ]
 }
