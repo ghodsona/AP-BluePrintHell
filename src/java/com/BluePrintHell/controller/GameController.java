@@ -8,6 +8,7 @@ import com.BluePrintHell.model.Port;
 import com.BluePrintHell.model.PortShape;
 import com.BluePrintHell.model.leveldata.SpawnEventData;
 import com.BluePrintHell.model.network.NetworkSystem;
+import com.BluePrintHell.model.packets.CirclePacket;
 import com.BluePrintHell.model.packets.Packet;
 import com.BluePrintHell.model.packets.SquarePacket;
 import com.BluePrintHell.model.packets.TrianglePacket;
@@ -298,7 +299,8 @@ public class GameController {
                 return new SquarePacket(position);
             case "TRIANGLE_MESSENGER":
                 return new TrianglePacket(position);
-            // TODO: انواع دیگر پکت‌ها در آینده اینجا اضافه می‌شوند
+            case "CIRCLE_MESSENGER": // << این case جدید را اضافه کنید
+                return new CirclePacket(position);
             default:
                 System.err.println("Warning: Unknown packet type '" + packetType + "' in JSON.");
                 return null;
@@ -428,8 +430,10 @@ public class GameController {
             double[] xPoints = {pos.getX(), pos.getX() + size, pos.getX() + size / 2};
             double[] yPoints = {pos.getY() + size, pos.getY() + size, pos.getY()};
             gc.fillPolygon(xPoints, yPoints, 3);
+        }  else if (packet instanceof CirclePacket) { // << این بخش جدید را اضافه کنید
+            gc.setFill(Color.ORANGE); // یک رنگ جدید برای پکت دایره
+            gc.fillOval(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
         } else {
-            // برای انواع دیگر پکت که در آینده اضافه می‌شوند، یک دایره رسم کن
             gc.setFill(Color.WHITE);
             gc.fillOval(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
         }
@@ -456,10 +460,11 @@ public class GameController {
                 double[] yPoints = {y + PORT_SIZE, y + PORT_SIZE, y};
                 gc.fillPolygon(xPoints, yPoints, 3);
                 break;
-            // ... بقیه شکل‌ها
+            case CIRCLE:
+                gc.fillOval(x, y, PORT_SIZE, PORT_SIZE);
+                break;
         }
 
-        // غیرفعال کردن افکت برای عناصر بعدی
         gc.setEffect(null);
     }
 
@@ -494,9 +499,11 @@ public class GameController {
     private Color getColorForShape(PortShape shape) {
         switch (shape) {
             case SQUARE:
-                return Color.web("#00f0ff"); // آبی نئونی
+                return Color.web("#00f0ff");
             case TRIANGLE:
-                return Color.web("#ff00ff"); // صورتی نئونی
+                return Color.web("#ff00ff");
+            case CIRCLE:
+                return Color.ORANGE;
             default:
                 return Color.WHITE;
         }

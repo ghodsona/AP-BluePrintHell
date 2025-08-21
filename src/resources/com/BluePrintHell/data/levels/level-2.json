@@ -1,39 +1,78 @@
 {
   "levelNumber": 2,
-  "levelName": "Buffer Overload Test",
-  "initialWireLength": 1000.0,
-  "initialCoins": 0,
+  "levelName": "Packet Rush",
+  "initialWireLength": 2500.0,
+  "initialCoins": 10,
   "systems": [
     {
-      "id": "ref_A_source",
+      "id": "ref_source_A",
       "type": "REFERENCE",
       "x": 100,
-      "y": 300,
+      "y": 150,
       "inputPorts": [],
       "outputPorts": [
-        { "id": "ref_A_out", "shape": "SQUARE" }
+        { "id": "ref_A_out_sq", "shape": "SQUARE" }
       ]
     },
     {
-      "id": "sys_B_buffer_test",
+      "id": "ref_source_B",
+      "type": "REFERENCE",
+      "x": 100,
+      "y": 450,
+      "inputPorts": [],
+      "outputPorts": [
+        { "id": "ref_B_out_tri", "shape": "TRIANGLE" },
+        { "id": "ref_B_out_circ", "shape": "CIRCLE" }
+      ]
+    },
+    {
+      "id": "sys_C_distributor",
       "type": "NORMAL",
-      "x": 400,
+      "x": 450,
       "y": 300,
       "inputPorts": [
-        { "id": "sys_B_in", "shape": "SQUARE" }
+        { "id": "sys_C_in_sq", "shape": "SQUARE" },
+        { "id": "sys_C_in_tri", "shape": "TRIANGLE" }
       ],
       "outputPorts": [
-        { "id": "sys_B_out_disconnected", "shape": "SQUARE" }
+        { "id": "sys_C_out_circ", "shape": "CIRCLE" }
       ]
+    },
+    {
+      "id": "sys_D_junction",
+      "type": "NORMAL",
+      "x": 800,
+      "y": 300,
+      "inputPorts": [
+        { "id": "sys_D_in_circ1", "shape": "CIRCLE" },
+        { "id": "sys_D_in_circ2", "shape": "CIRCLE" }
+      ],
+      "outputPorts": [
+        { "id": "sys_D_out_sq", "shape": "SQUARE" },
+        { "id": "sys_D_out_tri", "shape": "TRIANGLE" }
+      ]
+    },
+    {
+      "id": "ref_E_destination",
+      "type": "REFERENCE",
+      "x": 1100,
+      "y": 300,
+      "inputPorts": [
+        { "id": "ref_E_in_sq", "shape": "SQUARE" },
+        { "id": "ref_E_in_tri", "shape": "TRIANGLE" }
+      ],
+      "outputPorts": []
     }
   ],
   "spawnEvents": [
-    { "spawnTime": 1.0, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"},
-    { "spawnTime": 1.1, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"},
-    { "spawnTime": 1.2, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"},
-    { "spawnTime": 1.3, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"},
-    { "spawnTime": 1.4, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"},
-    { "spawnTime": 1.5, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"},
-    { "spawnTime": 1.6, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"}
+    { "spawnTime": 2.0, "sourceSystemId": "ref_source_A", "packetType": "SQUARE_MESSENGER" },
+    { "spawnTime": 2.5, "sourceSystemId": "ref_source_B", "packetType": "TRIANGLE_MESSENGER" },
+    { "spawnTime": 3.0, "sourceSystemId": "ref_source_A", "packetType": "SQUARE_MESSENGER" },
+    { "spawnTime": 3.5, "sourceSystemId": "ref_source_B", "packetType": "CIRCLE_MESSENGER" },
+    { "spawnTime": 4.0, "sourceSystemId": "ref_source_A", "packetType": "SQUARE_MESSENGER" },
+    { "spawnTime": 4.5, "sourceSystemId": "ref_source_B", "packetType": "TRIANGLE_MESSENGER" },
+    { "spawnTime": 5.0, "sourceSystemId": "ref_source_A", "packetType": "SQUARE_MESSENGER" },
+    { "spawnTime": 5.5, "sourceSystemId": "ref_source_B", "packetType": "CIRCLE_MESSENGER" },
+    { "spawnTime": 6.0, "sourceSystemId": "ref_source_A", "packetType": "SQUARE_MESSENGER" }
   ]
 }
