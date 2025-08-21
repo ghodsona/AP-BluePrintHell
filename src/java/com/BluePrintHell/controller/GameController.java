@@ -243,10 +243,23 @@ public class GameController {
                     updateGame(deltaTime);
                 }
 
-                // ۲. نقاشی کردن وضعیت جدید روی صفحه
                 renderGame();
+                updateHUD();
             }
         };
+    }
+
+    private void updateHUD() {
+        if (gameState == null) return;
+
+        coinsLabel.setText("Coins: " + gameState.getPlayerCoins());
+        // TODO: Update wireLengthLabel later
+
+        int total = gameState.getTotalPacketsSpawned();
+        int lost = gameState.getPacketsLost();
+        double lossPercentage = (total == 0) ? 0 : ((double) lost / total) * 100;
+
+        packetLossLabel.setText(String.format("Packet Loss: %.1f%%", lossPercentage));
     }
 
     private void updateGame(double deltaTime) {
@@ -290,16 +303,13 @@ public class GameController {
                     .findFirst()
                     .orElse(null);
 
-            // ۲. اگر سیستم مبدا پیدا شد، پکت را می‌سازیم.
             if (sourceSystem != null) {
-                // از متد کمکی (Factory) برای ساخت نوع صحیح پکت استفاده می‌کنیم.
                 Packet newPacket = createPacketFromType(nextEvent.getPacketType(), new Point2D(0, 0)); // موقعیت اولیه مهم نیست.
 
                 if (newPacket != null) {
-                    // ۳. پکت ساخته شده را به بافر داخلی سیستم مبدا تحویل می‌دهیم.
-                    // خود سیستم در فریم‌های بعدی تصمیم می‌گیرد که چه زمانی آن را ارسال کند.
                     sourceSystem.receivePacket(newPacket);
-                    System.out.println("Packet of type '" + nextEvent.getPacketType() + "' created and delivered to system '" + sourceSystem.getId() + "'");
+                    gameState.incrementTotalPacketsSpawned();
+                    System.out.println("Packet created...");
                 }
             } else {
                 System.err.println("Error: Could not find source system with ID: " + nextEvent.getSourceSystemId());

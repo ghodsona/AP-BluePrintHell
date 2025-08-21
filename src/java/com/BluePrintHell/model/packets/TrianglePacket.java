@@ -1,5 +1,6 @@
 package com.BluePrintHell.model.packets;
 
+import com.BluePrintHell.model.PortShape;
 import javafx.geometry.Point2D;
 
 public class TrianglePacket extends Packet {
@@ -7,5 +8,13 @@ public class TrianglePacket extends Packet {
         super(startPosition);
     }
 
-    // در آینده منطق خاص حرکت پکت مثلثی اینجا اضافه می‌شود
+    @Override
+    public boolean isCompatibleWith(PortShape shape) {
+        return shape == PortShape.TRIANGLE;
+    }
+
+    @Override
+    public int getCoinValue() {
+        return 3;
+    }
 }

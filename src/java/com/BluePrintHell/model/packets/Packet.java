@@ -2,6 +2,7 @@ package com.BluePrintHell.model.packets;
 
 import com.BluePrintHell.model.Connection;
 import com.BluePrintHell.model.Port;
+import com.BluePrintHell.model.PortShape;
 import com.BluePrintHell.model.network.NetworkSystem; // import
 import javafx.geometry.Point2D;
 
@@ -10,6 +11,9 @@ public abstract class Packet {
     protected Connection currentConnection;
     protected Port destinationPort;
     protected double speed = 150; // سرعت پیش‌فرض: ۱۵۰ پیکسل بر ثانیه
+
+    public abstract boolean isCompatibleWith(PortShape shape);
+    public abstract int getCoinValue();
 
     public Packet(Point2D startPosition) {
         this.position = startPosition;

@@ -12,41 +12,36 @@ import java.util.List;
  * تمام آبجکت‌های فعال، اطلاعات بازیکن و زمان بازی در اینجا مدیریت می‌شوند.
  */
 public class GameState {
-
-    // --- متغیرهای وضعیت کلی مرحله ---
     private int levelNumber;
     private double playerWireLength;
     private int playerCoins;
     private double packetLoss;
-    private double gameTime = 0; // زمان سپری شده از شروع فاز اجرا
+    private double gameTime = 0;
+    private int totalPacketsSpawned = 0;
+    private int packetsLost = 0;
 
-    // --- لیست‌های موجودیت‌های زنده در بازی ---
     private final List<NetworkSystem> systems = new ArrayList<>();
     private final List<Packet> packets = new ArrayList<>();
     private final List<Connection> connections = new ArrayList<>();
     private List<SpawnEventData> spawnEvents = new ArrayList<>(); // رویدادهای تولید پکت
 
-    /**
-     * این متد اصلی، وضعیت کل بازی را یک فریم به جلو می‌برد.
-     * این متد باید در هر فریم از حلقه بازی (AnimationTimer) فراخوانی شود.
-     * @param deltaTime زمان سپری شده از فریم قبلی (به ثانیه)
-     */
-    public void update(double deltaTime) {
-        // ۱. زمان کلی بازی را افزایش بده
-        this.gameTime += deltaTime;
+    public void incrementTotalPacketsSpawned() {
+        this.totalPacketsSpawned++;
+    }
 
-        // ۲. وضعیت تمام پکت‌های فعال را آپدیت کن
+    public void incrementPacketsLost() {
+        this.packetsLost++;
+    }
+
+    public void update(double deltaTime) {
+        this.gameTime += deltaTime;
         for (Packet packet : packets) {
             packet.update(deltaTime);
         }
-
-        // ۳. وضعیت تمام سیستم‌های فعال را آپدیت کن
         for (NetworkSystem system : systems) {
             system.update(deltaTime);
         }
     }
-
-    // --- متدهای مدیریتی برای لیست‌ها ---
 
     public void addSystem(NetworkSystem system) {
         systems.add(system);
@@ -66,6 +61,10 @@ public class GameState {
         }
     }
 
+    public void addCoins(int amount) {
+        this.playerCoins += amount;
+    }
+
     public void resetGameTime() {
         this.gameTime = 0;
     }
@@ -75,6 +74,9 @@ public class GameState {
     public List<Connection> getConnections() { return connections; }
     public List<SpawnEventData> getSpawnEvents() { return spawnEvents; }
     public double getGameTime() { return gameTime; }
+    public int getPlayerCoins() { return playerCoins; }
+    public int getTotalPacketsSpawned() { return totalPacketsSpawned; }
+    public int getPacketsLost() { return packetsLost; }
 
     public void setLevelNumber(int levelNumber) { this.levelNumber = levelNumber; }
     public void setPlayerWireLength(double playerWireLength) { this.playerWireLength = playerWireLength; }

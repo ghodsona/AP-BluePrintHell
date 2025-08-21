@@ -1,0 +1,39 @@
+{
+  "levelNumber": 2,
+  "levelName": "Buffer Overload Test",
+  "initialWireLength": 1000.0,
+  "initialCoins": 0,
+  "systems": [
+    {
+      "id": "ref_A_source",
+      "type": "REFERENCE",
+      "x": 100,
+      "y": 300,
+      "inputPorts": [],
+      "outputPorts": [
+        { "id": "ref_A_out", "shape": "SQUARE" }
+      ]
+    },
+    {
+      "id": "sys_B_buffer_test",
+      "type": "NORMAL",
+      "x": 400,
+      "y": 300,
+      "inputPorts": [
+        { "id": "sys_B_in", "shape": "SQUARE" }
+      ],
+      "outputPorts": [
+        { "id": "sys_B_out_disconnected", "shape": "SQUARE" }
+      ]
+    }
+  ],
+  "spawnEvents": [
+    { "spawnTime": 1.0, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"},
+    { "spawnTime": 1.1, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"},
+    { "spawnTime": 1.2, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"},
+    { "spawnTime": 1.3, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"},
+    { "spawnTime": 1.4, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"},
+    { "spawnTime": 1.5, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"},
+    { "spawnTime": 1.6, "sourceSystemId": "ref_A_source", "packetType": "SQUARE_MESSENGER"}
+  ]
+}

@@ -29,8 +29,11 @@ public abstract class NetworkSystem {
     public void receivePacket(Packet packet) {
         if (packetBuffer.size() < BUFFER_CAPACITY) {
             packetBuffer.add(packet);
+            if (this instanceof NormalSystem || (this instanceof ReferenceSystem && !this.getInputPorts().isEmpty())) {
+                this.getParentGameState().addCoins(packet.getCoinValue());
+            }
         } else {
-            // Buffer is full, packet is lost.
+            this.getParentGameState().incrementPacketsLost();
             System.err.println("System " + id + " buffer is full. Packet lost.");
             // TODO: Update packetLoss in GameState
         }
