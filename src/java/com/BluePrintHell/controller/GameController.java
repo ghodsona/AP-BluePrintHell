@@ -269,6 +269,26 @@ public class GameController {
             gameState.update(deltaTime);
             System.out.println("DEBUG: Game Time is now: " + gameState.getGameTime());
             handlePacketSpawning();
+            checkWinLossConditions();
+        }
+    }
+
+    private void checkWinLossConditions() {
+        // Condition for Game Over
+        int total = gameState.getTotalPacketsSpawned();
+        int lost = gameState.getPacketsLost();
+        if (total > 0 && ((double) lost / total) > 0.5) {
+            System.out.println("GAME OVER - Packet Loss exceeded 50%");
+            gameLoop.stop();
+            // TODO: Show Game Over screen
+        }
+
+        // Condition for Level Complete
+        // If all spawn events are done and no packets are left moving
+        if (gameState.getSpawnEvents().isEmpty() && gameState.getPackets().isEmpty()) {
+            System.out.println("LEVEL COMPLETE - All packets processed.");
+            gameLoop.stop();
+            // TODO: Show Level Complete screen with stats
         }
     }
 

@@ -1,14 +1,14 @@
 {
   "levelNumber": 1,
-  "levelName": "The First Connection",
-  "initialWireLength": 1000.0,
+  "levelName": "Physics Test: The Race",
+  "initialWireLength": 2000.0,
   "initialCoins": 5,
   "systems": [
     {
-      "id": "ref_A",
+      "id": "ref_A_Source",
       "type": "REFERENCE",
       "x": 100,
-      "y": 150,
+      "y": 250,
       "inputPorts": [],
       "outputPorts": [
         { "id": "ref_A_out_sq", "shape": "SQUARE" },
@@ -16,10 +16,10 @@
       ]
     },
     {
-      "id": "sys_B",
+      "id": "sys_B_TopPath",
       "type": "NORMAL",
-      "x": 400,
-      "y": 300,
+      "x": 450,
+      "y": 150,
       "inputPorts": [
         { "id": "sys_B_in_sq", "shape": "SQUARE" }
       ],
@@ -28,26 +28,38 @@
       ]
     },
     {
-      "id": "ref_C",
-      "type": "REFERENCE",
-      "x": 700,
-      "y": 150,
+      "id": "sys_C_BottomPath",
+      "type": "NORMAL",
+      "x": 450,
+      "y": 450,
       "inputPorts": [
-        { "id": "ref_C_in_sq", "shape": "SQUARE" },
-        { "id": "ref_C_in_tri", "shape": "TRIANGLE" }
+        { "id": "sys_C_in_tri", "shape": "TRIANGLE" }
+      ],
+      "outputPorts": [
+        { "id": "sys_C_out_sq", "shape": "SQUARE" }
+      ]
+    },
+    {
+      "id": "ref_D_Destination",
+      "type": "REFERENCE",
+      "x": 800,
+      "y": 250,
+      "inputPorts": [
+        { "id": "ref_D_in_tri", "shape": "TRIANGLE" },
+        { "id": "ref_D_in_sq", "shape": "SQUARE" }
       ],
       "outputPorts": []
     }
   ],
   "spawnEvents": [
     {
-      "spawnTime": 2.0,
-      "sourceSystemId": "ref_A",
+      "spawnTime": 1.0,
+      "sourceSystemId": "ref_A_Source",
       "packetType": "SQUARE_MESSENGER"
     },
     {
-      "spawnTime": 4.0,
-      "sourceSystemId": "ref_A",
+      "spawnTime": 1.0,
+      "sourceSystemId": "ref_A_Source",
       "packetType": "TRIANGLE_MESSENGER"
     }
   ]

@@ -2,38 +2,64 @@ package com.BluePrintHell.model.network;
 import com.BluePrintHell.model.Port;
 import com.BluePrintHell.model.packets.Packet;
 import javafx.geometry.Point2D;
+
 public class ReferenceSystem extends NetworkSystem {
     public ReferenceSystem(String id, Point2D position) { super(id, position); }
+
+    @Override
+    public void receivePacket(Packet packet) {
+        // If this is a destination reference system (has inputs, no outputs)
+        if (!this.getInputPorts().isEmpty() && this.getOutputPorts().isEmpty()) {
+            System.out.println("Packet successfully reached destination: " + this.id);
+            this.getParentGameState().incrementPacketsSucceeded();
+            // The packet is not added to the buffer, it just disappears.
+        } else {
+            // If it's a source reference system, just buffer it for launch
+            super.receivePacket(packet);
+        }
+    }
+
     @Override
     public void update(double deltaTime) {
-        // اگر پکتی در بافر منتظر است تا ارسال شود
-        if (!packetBuffer.isEmpty()) {
-            // یک پورت خروجی پیدا کن که به یک سیم متصل باشد
-            for (Port outputPort : outputPorts) {
-                if (outputPort.isConnected()) {
-                    // پکت را از صف بافر خارج کن
-                    Packet packetToLaunch = packetBuffer.poll();
+        if (packetBuffer.isEmpty()) {
+            return; // Nothing to do if buffer is empty
+        }
 
-                    if (packetToLaunch != null) {
-                        // ۱. موقعیت اولیه پکت را به مرکز پورت خروجی منتقل کن
-                        packetToLaunch.setPosition(new Point2D(
-                                outputPort.getPosition().getX() + 6, // PORT_SIZE / 2
-                                outputPort.getPosition().getY() + 6  // PORT_SIZE / 2
-                        ));
+        Packet packetToLaunch = packetBuffer.peek(); // Look at the next packet without removing
+        Port targetPort = null;
 
-                        // ۲. به پکت بگو که روی کدام سیم و به سمت کدام مقصد حرکت کند
-                        packetToLaunch.launch(outputPort.getAttachedConnection());
+        // Priority 1: Find a connected and COMPATIBLE port
+        for (Port port : outputPorts) {
+            if (port.isConnected() && packetToLaunch.isCompatibleWith(port.getShape())) {
+                // TODO: Also check if the wire is free
+                targetPort = port;
+                break; // Found the best possible port, no need to search further
+            }
+        }
 
-                        // ۳. پکت را به لیست اصلی پکت‌های "در حال حرکت" در GameState اضافه کن
-                        this.getParentGameState().addPacket(packetToLaunch);
-
-                        System.out.println(">>> System " + this.id + " launched a packet!");
-
-                        // بعد از ارسال یک پکت، از حلقه خارج شو تا در هر فریم فقط یک پکت ارسال شود
-                        break;
-                    }
+        // Priority 2: If no compatible port was found, find ANY connected port
+        if (targetPort == null) {
+            for (Port port : outputPorts) {
+                if (port.isConnected()) {
+                    // TODO: Also check if the wire is free
+                    targetPort = port;
+                    break; // Found a fallback port
                 }
             }
         }
+
+        // If a suitable port was found (either priority 1 or 2)
+        if (targetPort != null) {
+            packetBuffer.poll(); // Now, officially remove the packet from the buffer
+
+            packetToLaunch.setPosition(new Point2D(
+                    targetPort.getPosition().getX() + 6, // PORT_SIZE / 2
+                    targetPort.getPosition().getY() + 6
+            ));
+
+            packetToLaunch.launch(targetPort.getAttachedConnection());
+            this.getParentGameState().addPacket(packetToLaunch);
+        }
     }
+
 }

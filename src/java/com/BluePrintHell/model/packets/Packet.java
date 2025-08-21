@@ -1,69 +1,61 @@
 package com.BluePrintHell.model.packets;
 
 import com.BluePrintHell.model.Connection;
+import com.BluePrintHell.model.GameState;
 import com.BluePrintHell.model.Port;
 import com.BluePrintHell.model.PortShape;
 import com.BluePrintHell.model.network.NetworkSystem; // import
 import javafx.geometry.Point2D;
-
 public abstract class Packet {
-    protected Point2D position; // این متغیر از این به بعد "نقطه ثقل" پکت است
+    protected Point2D position;
     protected Connection currentConnection;
     protected Port destinationPort;
-    protected double speed = 150; // سرعت پیش‌فرض: ۱۵۰ پیکسل بر ثانیه
-
-    public abstract boolean isCompatibleWith(PortShape shape);
-    public abstract int getCoinValue();
+    protected double currentSpeed;
+    protected Point2D velocity;
 
     public Packet(Point2D startPosition) {
         this.position = startPosition;
+        this.velocity = Point2D.ZERO;
+        this.currentSpeed = 0;
     }
 
-    /**
-     * این متد جدید، پکت را روی یک سیم برای حرکت به سمت مقصد آماده می‌کند.
-     */
     public void launch(Connection connection) {
         this.currentConnection = connection;
         this.destinationPort = connection.getEndPort();
-        System.out.println("Packet launched towards: " + destinationPort.getId());
+        // The specific speed will be set by the subclass
     }
 
-
     public void update(double deltaTime) {
-        // فقط اگر پکت یک مقصد داشته باشد، حرکت کن
         if (destinationPort != null) {
             Point2D destCenter = new Point2D(
-                    destinationPort.getPosition().getX() + 12 / 2.0, // PORT_SIZE / 2
-                    destinationPort.getPosition().getY() + 12 / 2.0
+                    destinationPort.getPosition().getX() + 6, // PORT_SIZE / 2
+                    destinationPort.getPosition().getY() + 6
             );
 
-            // ۱. بردار جهت به سمت مقصد را پیدا کن
             Point2D direction = destCenter.subtract(position).normalize();
+            this.velocity = direction.multiply(currentSpeed); // Update velocity based on current speed
+            this.position = position.add(velocity.multiply(deltaTime));
 
-            // ۲. بردار سرعت را بساز
-            Point2D velocity = direction.multiply(speed);
-
-            // ۳. پکت را به اندازه یک گام کوچک حرکت بده
-            position = position.add(velocity.multiply(deltaTime));
-
-            // ۴. چک کن آیا به مقصد رسیده‌ای یا نه
-            if (position.distance(destCenter) < 2.0) { // یک محدوده کوچک برای رسیدن
-                System.out.println("Packet arrived at: " + destinationPort.getId());
+            if (position.distance(destCenter) < 2.0) {
                 NetworkSystem destSystem = destinationPort.getParentSystem();
-                destSystem.receivePacket(this); // خودت را به سیستم مقصد تحویل بده
+                destSystem.receivePacket(this);
 
-                // وضعیت حرکت خود را ریست کن
-                this.destinationPort = null;
-                this.currentConnection = null;
+                this.getParentGameState().removePacket(this);
             }
         }
     }
 
-    // --- Getters and Setters ---
-    public Point2D getPosition() { return position; }
-    public void setVelocity(Point2D velocity) { /* این متد دیگر لازم نیست */ }
+    public abstract int getCoinValue();
 
-    public void setPosition(Point2D position) {
-        this.position = position;
+    public abstract boolean isCompatibleWith(PortShape shape);
+
+    public Point2D getPosition() { return position; }
+    public void setPosition(Point2D position) { this.position = position; }
+
+    protected GameState getParentGameState() {
+        if(currentConnection != null) {
+            return currentConnection.getStartPort().getParentSystem().getParentGameState();
+        }
+        return null;
     }
 }

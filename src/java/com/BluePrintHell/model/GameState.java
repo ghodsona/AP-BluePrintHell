@@ -24,10 +24,24 @@ public class GameState {
     private final List<Packet> packets = new ArrayList<>();
     private final List<Connection> connections = new ArrayList<>();
     private List<SpawnEventData> spawnEvents = new ArrayList<>(); // رویدادهای تولید پکت
+    private int packetsSucceeded = 0;
 
     public void incrementTotalPacketsSpawned() {
         this.totalPacketsSpawned++;
     }
+
+    public void removePacket(Packet packet) {
+        if (packet != null) {
+            // Use iterator to safely remove while iterating
+            packets.removeIf(p -> p.equals(packet));
+        }
+    }
+
+    public void incrementPacketsSucceeded() {
+        this.packetsSucceeded++;
+    }
+
+    public int getPacketsSucceeded() { return packetsSucceeded; }
 
     public void incrementPacketsLost() {
         this.packetsLost++;

@@ -15,28 +15,43 @@ public class NormalSystem extends NetworkSystem {
 
     @Override
     public void update(double deltaTime) {
-        // Do nothing if buffer is empty
         if (packetBuffer.isEmpty()) {
-            return;
+            return; // Nothing to do if buffer is empty
         }
 
-        Packet packetToLaunch = packetBuffer.peek(); // Look at the next packet without removing it
-        Port targetPort = findOutputPortFor(packetToLaunch);
+        Packet packetToLaunch = packetBuffer.peek(); // Look at the next packet without removing
+        Port targetPort = null;
 
-        // If a valid output port was found
+        // Priority 1: Find a connected and COMPATIBLE port
+        for (Port port : outputPorts) {
+            if (port.isConnected() && packetToLaunch.isCompatibleWith(port.getShape())) {
+                // TODO: Also check if the wire is free
+                targetPort = port;
+                break; // Found the best possible port, no need to search further
+            }
+        }
+
+        // Priority 2: If no compatible port was found, find ANY connected port
+        if (targetPort == null) {
+            for (Port port : outputPorts) {
+                if (port.isConnected()) {
+                    // TODO: Also check if the wire is free
+                    targetPort = port;
+                    break; // Found a fallback port
+                }
+            }
+        }
+
+        // If a suitable port was found (either priority 1 or 2)
         if (targetPort != null) {
-            packetBuffer.poll(); // Now remove the packet from the buffer
+            packetBuffer.poll(); // Now, officially remove the packet from the buffer
 
-            // Set packet's initial position to the center of the output port
             packetToLaunch.setPosition(new Point2D(
                     targetPort.getPosition().getX() + 6, // PORT_SIZE / 2
                     targetPort.getPosition().getY() + 6
             ));
 
-            // Launch the packet onto the wire
             packetToLaunch.launch(targetPort.getAttachedConnection());
-
-            // Add the packet to the main list of moving packets
             this.getParentGameState().addPacket(packetToLaunch);
         }
     }
