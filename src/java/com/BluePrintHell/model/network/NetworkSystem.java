@@ -19,16 +19,23 @@ public abstract class NetworkSystem {
     protected Queue<Packet> packetBuffer = new LinkedList<>();
 
     protected GameState parentGameState;
+    private final List<Packet> justArrivedPackets = new ArrayList<>();
 
     public NetworkSystem(String id, Point2D position) {
         this.id = id;
         this.position = position;
     }
 
+    public boolean isBufferEmpty() {
+        return packetBuffer.isEmpty();
+    }
+
     // Update the receivePacket method to check capacity
     public void receivePacket(Packet packet) {
         if (packetBuffer.size() < BUFFER_CAPACITY) {
             packetBuffer.add(packet);
+            justArrivedPackets.add(packet); // Mark this packet as newly arrived
+
             if (this instanceof NormalSystem || (this instanceof ReferenceSystem && !this.getInputPorts().isEmpty())) {
                 this.getParentGameState().addCoins(packet.getCoinValue());
             }
@@ -49,6 +56,13 @@ public abstract class NetworkSystem {
         return parentGameState;
     }
 
+    public void clearJustArrived() {
+        justArrivedPackets.clear();
+    }
+
+    protected boolean wasJustArrived(Packet packet) {
+        return justArrivedPackets.contains(packet);
+    }
     // --- Getters ---
     public String getId() { return id; }
     public Point2D getPosition() { return position; }

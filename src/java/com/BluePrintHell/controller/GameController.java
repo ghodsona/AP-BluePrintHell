@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.ResourceBundle;
 import javafx.scene.layout.AnchorPane;
+import com.BluePrintHell.util.CollisionManager; // << import جدید
 
 public class GameController {
 
@@ -38,6 +39,7 @@ public class GameController {
     private AnimationTimer gameLoop;
     private GameState gameState;
     private GamePhase currentPhase = GamePhase.DESIGN;
+    private CollisionManager collisionManager; // << متغیر جدید
 
     private NetworkSystem selectedSystem = null; // سیستمی که برای جابجایی انتخاب شده
     private double offsetX; // فاصله افقی کلیک ماوس تا گوشه سیستم
@@ -59,6 +61,7 @@ public class GameController {
         this.coinsLabel = view.getCoinsLabel();
         this.wireLengthLabel = view.getWireLengthLabel();
         this.packetLossLabel = view.getPacketLossLabel();
+        this.collisionManager = new CollisionManager(50); // 50 is the cell size
 
         // ۲. گرفتن وضعیت بازی از GameManager
         this.gameState = GameManager.getInstance().getCurrentGameState();
@@ -264,13 +267,13 @@ public class GameController {
     }
 
     private void updateGame(double deltaTime) {
-        // TODO: تمام منطق بازی اینجا پیاده‌سازی می‌شود
-        // برای مثال: packet.move(deltaTime);
         if (gameState != null) {
             gameState.update(deltaTime);
             System.out.println("DEBUG: Game Time is now: " + gameState.getGameTime());
             handlePacketSpawning();
+            collisionManager.checkCollisions(gameState.getPackets());
             checkWinLossConditions();
+            gameState.cleanupLists();
         }
     }
 
@@ -286,10 +289,13 @@ public class GameController {
 
         // Condition for Level Complete
         // If all spawn events are done and no packets are left moving
-        if (gameState.getSpawnEvents().isEmpty() && gameState.getPackets().isEmpty()) {
-            System.out.println("LEVEL COMPLETE - All packets processed.");
+        if (gameState.getSpawnEvents().isEmpty() &&
+                gameState.getPackets().isEmpty() &&
+                gameState.allSystemBuffersAreEmpty()) { // << این شرط جدید اضافه شده
+
+            System.out.println("LEVEL COMPLETE - All packets processed and all systems are clear.");
             gameLoop.stop();
-            // TODO: Show Level Complete screen with stats
+            // TODO: Show Level Complete screen
         }
     }
 

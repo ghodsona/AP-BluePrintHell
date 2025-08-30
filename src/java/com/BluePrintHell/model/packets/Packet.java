@@ -6,12 +6,14 @@ import com.BluePrintHell.model.Port;
 import com.BluePrintHell.model.PortShape;
 import com.BluePrintHell.model.network.NetworkSystem; // import
 import javafx.geometry.Point2D;
+
 public abstract class Packet {
     protected Point2D position;
     protected Connection currentConnection;
     protected Port destinationPort;
     protected double currentSpeed;
     protected Point2D velocity;
+    protected double noise = 0; // Field for tracking noise
 
     public Packet(Point2D startPosition) {
         this.position = startPosition;
@@ -39,8 +41,9 @@ public abstract class Packet {
             if (position.distance(destCenter) < 2.0) {
                 NetworkSystem destSystem = destinationPort.getParentSystem();
                 destSystem.receivePacket(this);
-
                 this.getParentGameState().removePacket(this);
+                this.destinationPort = null;
+                this.currentConnection = null;
             }
         }
     }
@@ -57,5 +60,15 @@ public abstract class Packet {
             return currentConnection.getStartPort().getParentSystem().getParentGameState();
         }
         return null;
+    }
+
+    public abstract int getSize();
+
+    public void addNoise(double amount) {
+        this.noise += amount;
+    }
+
+    public void applyForce(Point2D force) {
+        this.velocity = this.velocity.add(force);
     }
 }

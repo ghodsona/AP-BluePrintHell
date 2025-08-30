@@ -16,52 +16,38 @@ public class NormalSystem extends NetworkSystem {
     @Override
     public void update(double deltaTime) {
         if (packetBuffer.isEmpty()) {
-            return; // Nothing to do if buffer is empty
+            return; // Buffer is empty, nothing to do.
         }
 
-        Packet packetToLaunch = packetBuffer.peek(); // Look at the next packet without removing
-        Port targetPort = null;
+        System.out.println("DEBUG: System " + getId() + " has " + packetBuffer.size() + " packet(s) in buffer. Trying to launch one.");
 
-        // Priority 1: Find a connected and COMPATIBLE port
-        for (Port port : outputPorts) {
-            if (port.isConnected() && packetToLaunch.isCompatibleWith(port.getShape())) {
-                // TODO: Also check if the wire is free
-                targetPort = port;
-                break; // Found the best possible port, no need to search further
-            }
+        Packet packetToLaunch = packetBuffer.peek();
+
+        if (wasJustArrived(packetToLaunch)) {
+            return;
         }
 
-        // Priority 2: If no compatible port was found, find ANY connected port
-        if (targetPort == null) {
-            for (Port port : outputPorts) {
-                if (port.isConnected()) {
-                    // TODO: Also check if the wire is free
-                    targetPort = port;
-                    break; // Found a fallback port
-                }
-            }
-        }
+        Port targetPort = findOutputPortFor(packetToLaunch);
 
-        // If a suitable port was found (either priority 1 or 2)
         if (targetPort != null) {
-            packetBuffer.poll(); // Now, officially remove the packet from the buffer
+            System.out.println(" -> SUCCESS: Found valid output port: " + targetPort.getId());
+
+            packetBuffer.poll(); // Remove the packet from the buffer
 
             packetToLaunch.setPosition(new Point2D(
-                    targetPort.getPosition().getX() + 6, // PORT_SIZE / 2
+                    targetPort.getPosition().getX() + 6,
                     targetPort.getPosition().getY() + 6
             ));
 
             packetToLaunch.launch(targetPort.getAttachedConnection());
             this.getParentGameState().addPacket(packetToLaunch);
+
+        } else {
+            // --- این پیام دیباگ بسیار مهم است ---
+            System.out.println(" -> FAILED: No available output port found for packet. Packet remains in buffer.");
         }
     }
 
-    /**
-     * Finds a suitable output port for a given packet based on game rules.
-     * Rule: Priority 1: Compatible & Free. Priority 2: Any Free port.
-     * @param packet The packet to be routed.
-     * @return A suitable Port, or null if none is available.
-     */
     private Port findOutputPortFor(Packet packet) {
         // Priority 1: Find a connected port with a compatible shape where the wire is free
         for (Port port : outputPorts) {

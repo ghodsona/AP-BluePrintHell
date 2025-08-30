@@ -28,4 +28,9 @@ public class SquarePacket extends Packet {
     public boolean isCompatibleWith(PortShape shape) {
         return shape == PortShape.SQUARE;
     }
+
+    @Override
+    public int getSize() {
+        return 2; // Size defined in the documentation
+    }
 }

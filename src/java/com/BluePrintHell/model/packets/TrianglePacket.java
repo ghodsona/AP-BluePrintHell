@@ -39,4 +39,9 @@ public class TrianglePacket extends Packet {
     public boolean isCompatibleWith(PortShape shape) {
         return shape == PortShape.TRIANGLE;
     }
+
+    @Override
+    public int getSize() {
+        return 3; // Size defined in the documentation
+    }
 }

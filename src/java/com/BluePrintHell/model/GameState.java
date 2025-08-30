@@ -22,6 +22,7 @@ public class GameState {
 
     private final List<NetworkSystem> systems = new ArrayList<>();
     private final List<Packet> packets = new ArrayList<>();
+    private final List<Packet> packetsToRemove = new ArrayList<>();
     private final List<Connection> connections = new ArrayList<>();
     private List<SpawnEventData> spawnEvents = new ArrayList<>(); // رویدادهای تولید پکت
     private int packetsSucceeded = 0;
@@ -32,13 +33,20 @@ public class GameState {
 
     public void removePacket(Packet packet) {
         if (packet != null) {
-            // Use iterator to safely remove while iterating
-            packets.removeIf(p -> p.equals(packet));
+            packetsToRemove.add(packet);
         }
     }
 
     public void incrementPacketsSucceeded() {
         this.packetsSucceeded++;
+    }
+
+    public void cleanupLists() {
+        packets.removeAll(packetsToRemove);
+        packetsToRemove.clear();
+        for (NetworkSystem system : systems) {
+            system.clearJustArrived();
+        }
     }
 
     public int getPacketsSucceeded() { return packetsSucceeded; }
@@ -49,12 +57,21 @@ public class GameState {
 
     public void update(double deltaTime) {
         this.gameTime += deltaTime;
-        for (Packet packet : packets) {
-            packet.update(deltaTime);
+        for (int i = packets.size() - 1; i >= 0; i--) {
+            packets.get(i).update(deltaTime);
         }
         for (NetworkSystem system : systems) {
             system.update(deltaTime);
         }
+    }
+
+    public boolean allSystemBuffersAreEmpty() {
+        for (NetworkSystem system : systems) {
+            if (!system.isBufferEmpty()) {
+                return false; // Found a system with a packet still in its buffer
+            }
+        }
+        return true; // All systems are clear
     }
 
     public void addSystem(NetworkSystem system) {

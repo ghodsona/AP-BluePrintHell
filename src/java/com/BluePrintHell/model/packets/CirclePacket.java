@@ -47,4 +47,9 @@ public class CirclePacket extends Packet {
     public boolean isCompatibleWith(PortShape shape) {
         return shape == PortShape.CIRCLE;
     }
+
+    @Override
+    public int getSize() {
+        return 1; // Size defined in the documentation
+    }
 }
