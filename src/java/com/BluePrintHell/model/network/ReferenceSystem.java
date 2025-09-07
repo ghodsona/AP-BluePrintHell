@@ -19,46 +19,65 @@ public class ReferenceSystem extends NetworkSystem {
         }
     }
 
+    // In both NormalSystem.java and ReferenceSystem.java
+
+    /**
+     * Finds a suitable output port for a given packet based on game rules.
+     * Rule: Priority 1: Compatible & Free. Priority 2: Any Free port.
+     * @param packet The packet to be routed.
+     * @return A suitable Port, or null if none is available.
+     */
+    private Port findOutputPortFor(Packet packet) {
+        // Priority 1: Find a connected, free, and COMPATIBLE port
+        for (Port port : outputPorts) {
+            if (port.isConnected() && port.getAttachedConnection().isFree() &&
+                    packet.isCompatibleWith(port.getShape())) {
+                return port; // Found the best possible port
+            }
+        }
+
+        // Priority 2: If no compatible port was found, find ANY connected, FREE port
+        for (Port port : outputPorts) {
+            if (port.isConnected() && port.getAttachedConnection().isFree()) {
+                return port; // Found a fallback port
+            }
+        }
+
+        return null; // No available port found at this moment
+    }
+
     @Override
     public void update(double deltaTime) {
-        if (packetBuffer.isEmpty()) {
-            return; // Nothing to do if buffer is empty
+        if (packetBuffer.isEmpty() || wasJustArrived(packetBuffer.peek())) {
+            return;
         }
 
-        Packet packetToLaunch = packetBuffer.peek(); // Look at the next packet without removing
-        Port targetPort = null;
+        Packet packetToLaunch = packetBuffer.peek();
+        Port targetPort = findOutputPortFor(packetToLaunch);
 
-        // Priority 1: Find a connected and COMPATIBLE port
-        for (Port port : outputPorts) {
-            if (port.isConnected() && packetToLaunch.isCompatibleWith(port.getShape())) {
-                // TODO: Also check if the wire is free
-                targetPort = port;
-                break; // Found the best possible port, no need to search further
-            }
-        }
-
-        // Priority 2: If no compatible port was found, find ANY connected port
-        if (targetPort == null) {
-            for (Port port : outputPorts) {
-                if (port.isConnected()) {
-                    // TODO: Also check if the wire is free
-                    targetPort = port;
-                    break; // Found a fallback port
-                }
-            }
-        }
-
-        // If a suitable port was found (either priority 1 or 2)
         if (targetPort != null) {
-            packetBuffer.poll(); // Now, officially remove the packet from the buffer
-
-            packetToLaunch.setPosition(new Point2D(
+            // Check if the spawn area in front of the port is clear
+            boolean isSpawnAreaClear = true;
+            Point2D spawnPosition = new Point2D(
                     targetPort.getPosition().getX() + 6, // PORT_SIZE / 2
                     targetPort.getPosition().getY() + 6
-            ));
+            );
 
-            packetToLaunch.launch(targetPort.getAttachedConnection());
-            this.getParentGameState().addPacket(packetToLaunch);
+            for (Packet existingPacket : this.getParentGameState().getPackets()) {
+                if (existingPacket.getVisualPosition().distance(spawnPosition) < 20) { // 20 is a safe radius
+                    isSpawnAreaClear = false;
+                    break;
+                }
+            }
+
+            // Only launch if the area is clear
+            if (isSpawnAreaClear) {
+                packetBuffer.poll(); // Remove packet from buffer
+
+                packetToLaunch.setPosition(spawnPosition);
+                packetToLaunch.launch(targetPort.getAttachedConnection());
+                this.getParentGameState().addPacket(packetToLaunch);
+            }
         }
     }
 
