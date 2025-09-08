@@ -10,7 +10,7 @@ public class CirclePacket extends Packet {
     private double accelerationFactor;
 
     public CirclePacket(Point2D startPosition) {
-        super(startPosition);
+        super(startPosition, 1);
     }
 
     @Override

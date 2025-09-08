@@ -1,14 +1,14 @@
 {
   "levelNumber": 1,
-  "levelName": "Physics Test: The Race",
-  "initialWireLength": 2000.0,
-  "initialCoins": 5,
+  "levelName": "Test: Collision Alley",
+  "initialWireLength": 1500.0,
+  "initialCoins": 10,
   "systems": [
     {
       "id": "ref_A_Source",
       "type": "REFERENCE",
       "x": 100,
-      "y": 250,
+      "y": 300,
       "inputPorts": [],
       "outputPorts": [
         { "id": "ref_A_out_sq", "shape": "SQUARE" },
@@ -16,37 +16,25 @@
       ]
     },
     {
-      "id": "sys_B_TopPath",
+      "id": "sys_B_Funnel",
       "type": "NORMAL",
       "x": 450,
-      "y": 150,
+      "y": 300,
       "inputPorts": [
-        { "id": "sys_B_in_sq", "shape": "SQUARE" }
+        { "id": "sys_B_in_sq", "shape": "SQUARE" },
+        { "id": "sys_B_in_tri", "shape": "TRIANGLE" }
       ],
       "outputPorts": [
-        { "id": "sys_B_out_tri", "shape": "TRIANGLE" }
+        { "id": "sys_B_out_circ", "shape": "CIRCLE" }
       ]
     },
     {
-      "id": "sys_C_BottomPath",
-      "type": "NORMAL",
-      "x": 450,
-      "y": 450,
-      "inputPorts": [
-        { "id": "sys_C_in_tri", "shape": "TRIANGLE" }
-      ],
-      "outputPorts": [
-        { "id": "sys_C_out_sq", "shape": "SQUARE" }
-      ]
-    },
-    {
-      "id": "ref_D_Destination",
+      "id": "ref_C_Destination",
       "type": "REFERENCE",
       "x": 800,
-      "y": 250,
+      "y": 300,
       "inputPorts": [
-        { "id": "ref_D_in_tri", "shape": "TRIANGLE" },
-        { "id": "ref_D_in_sq", "shape": "SQUARE" }
+        { "id": "ref_C_in_circ", "shape": "CIRCLE" }
       ],
       "outputPorts": []
     }
@@ -58,7 +46,17 @@
       "packetType": "SQUARE_MESSENGER"
     },
     {
-      "spawnTime": 1.0,
+      "spawnTime": 1.2,
+      "sourceSystemId": "ref_A_Source",
+      "packetType": "TRIANGLE_MESSENGER"
+    },
+    {
+      "spawnTime": 2.0,
+      "sourceSystemId": "ref_A_Source",
+      "packetType": "SQUARE_MESSENGER"
+    },
+    {
+      "spawnTime": 2.2,
       "sourceSystemId": "ref_A_Source",
       "packetType": "TRIANGLE_MESSENGER"
     }

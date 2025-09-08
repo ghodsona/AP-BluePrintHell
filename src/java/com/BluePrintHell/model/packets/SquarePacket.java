@@ -7,7 +7,7 @@ public class SquarePacket extends Packet {
     private static final double BASE_SPEED = 100;
 
     public SquarePacket(Point2D startPosition) {
-        super(startPosition);
+        super(startPosition, 2);
     }
 
     @Override

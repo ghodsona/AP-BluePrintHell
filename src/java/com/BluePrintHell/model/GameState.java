@@ -31,6 +31,10 @@ public class GameState {
         this.totalPacketsSpawned++;
     }
 
+    public int getLevelNumber() {
+        return levelNumber;
+    }
+
     public void removePacket(Packet packet) {
         if (packet != null) {
             packetsToRemove.add(packet);
@@ -46,6 +50,14 @@ public class GameState {
         packetsToRemove.clear();
         for (NetworkSystem system : systems) {
             system.clearJustArrived();
+        }
+    }
+
+    public void losePacket(Packet packet) {
+        if (packet != null && !packetsToRemove.contains(packet)) { // برای جلوگیری از شمارش چندباره
+            System.out.println("PACKET LOST: A packet was lost due to excessive noise or other reasons.");
+            this.packetsLost++;
+            removePacket(packet);
         }
     }
 

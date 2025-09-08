@@ -6,7 +6,9 @@ public enum Screen {
     LEVELS("/com/BluePrintHell/view/screens/LevelSelectScreen.fxml"),
     GAME("/com/BluePrintHell/view/screens/GameScreen.fxml"),
     SHOP("/com/BluePrintHell/view/screens/ShopScreen.fxml"),
-    SETTINGS("/com/BluePrintHell/view/screens/SettingsScreen.fxml");
+    SETTINGS("/com/BluePrintHell/view/screens/SettingsScreen.fxml"),
+    END_SCREEN("/com/BluePrintHell/view/screens/EndScreen.fxml"); // <<<< صفحه جدید
+
 
     private final String fxmlPath;
 

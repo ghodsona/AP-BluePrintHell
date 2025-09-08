@@ -2,10 +2,7 @@ package com.BluePrintHell.controller;
 
 import com.BluePrintHell.GameManager;
 import com.BluePrintHell.GamePhase;
-import com.BluePrintHell.model.Connection;
-import com.BluePrintHell.model.GameState;
-import com.BluePrintHell.model.Port;
-import com.BluePrintHell.model.PortShape;
+import com.BluePrintHell.model.*;
 import com.BluePrintHell.model.leveldata.SpawnEventData;
 import com.BluePrintHell.model.network.NetworkSystem;
 import com.BluePrintHell.model.packets.CirclePacket;
@@ -137,14 +134,14 @@ public class GameController {
     // در فایل GameController.java
 
     private void onMousePressed(MouseEvent event) {
-        if (currentPhase == GamePhase.DESIGN) {// --- حالت ۱: اگر در حال کشیدن سیم هستیم (این یعنی کلیک دوم) ---
+        if (currentPhase == GamePhase.DESIGN) {
+            // --- حالت ۱: اگر در حال کشیدن سیم هستیم (این یعنی کلیک دوم) ---
             if (isDrawingWire) {
                 Port endPort = getPortAt(event.getX(), event.getY());
 
-                // بررسی می‌کنیم آیا کلیک دوم روی یک پورت معتبر برای اتصال بوده است
-                if (endPort != null && !endPort.isConnected() &&
-                        endPort.getParentSystem() != wireStartPort.getParentSystem() &&
-                        endPort.getType() != wireStartPort.getType()) {
+                // در اینجا یک شرط اضافه می‌کنیم تا مطمئن شویم پورت مقصد از نوع ورودی است
+                if (endPort != null && endPort.getType() == PortType.INPUT && !endPort.isConnected() &&
+                        endPort.getParentSystem() != wireStartPort.getParentSystem()) {
 
                     // TODO: چک کردن محدودیت طول سیم
 
@@ -156,22 +153,17 @@ public class GameController {
                     System.out.println("Wire connected successfully!");
 
                 } else {
-                    // اگر کلیک روی پورت معتبر نبود (مثلا فضای خالی، پورت اشتباه یا همان پورت اول)، عملیات لغو می‌شود
-                    System.out.println("Wiring canceled.");
+                    System.out.println("Wiring canceled. Invalid endpoint.");
                 }
 
-                // در هر صورت، عملیات سیم‌کشی در اینجا به پایان می‌رسد
                 isDrawingWire = false;
                 wireStartPort = null;
-
             }
             // --- حالت ۲: اگر در حال کشیدن سیم نیستیم (این یعنی کلیک اول) ---
             else {
                 Port clickedPort = getPortAt(event.getX(), event.getY());
 
-                // اگر روی یک پورت کلیک شده باشد
                 if (clickedPort != null) {
-                    // اگر پورت از قبل متصل بود، سیم متصل به آن را حذف کن
                     if (clickedPort.isConnected()) {
                         Connection connectionToRemove = clickedPort.getAttachedConnection();
                         connectionToRemove.getStartPort().disconnect();
@@ -179,15 +171,13 @@ public class GameController {
                         gameState.removeConnection(connectionToRemove);
                         System.out.println("Wire removed.");
                     }
-                    // اگر پورت خالی بود، عملیات کشیدن سیم را شروع کن
-                    else {
+                    else if (clickedPort.getType() == PortType.OUTPUT) {
                         isDrawingWire = true;
                         wireStartPort = clickedPort;
                         liveWireEndPoint = new Point2D(event.getX(), event.getY());
-                        System.out.println("Started drawing wire from port: " + clickedPort.getId());
+                        System.out.println("Started drawing wire from OUTPUT port: " + clickedPort.getId());
                     }
                 }
-                // اگر روی پورت کلیک نشده بود، منطق جابجایی سیستم را اجرا کن
                 else {
                     for (int i = gameState.getSystems().size() - 1; i >= 0; i--) {
                         NetworkSystem system = gameState.getSystems().get(i);
@@ -282,23 +272,26 @@ public class GameController {
         int total = gameState.getTotalPacketsSpawned();
         int lost = gameState.getPacketsLost();
         if (total > 0 && ((double) lost / total) > 0.5) {
-            System.out.println("GAME OVER - Packet Loss exceeded 50%");
             gameLoop.stop();
-            // TODO: Show Game Over screen
+            // استفاده از متد جدید activate با یک لامبدا برای پاس دادن دیتا
+            ScreenController.getInstance().activate(Screen.END_SCREEN, (EndScreenController c) -> {
+                c.initializeData(gameState, false); // false = isWin
+            });
         }
 
         // Condition for Level Complete
-        // If all spawn events are done and no packets are left moving
-        if (gameState.getSpawnEvents().isEmpty() &&
-                gameState.getPackets().isEmpty() &&
-                gameState.allSystemBuffersAreEmpty()) { // << این شرط جدید اضافه شده
+        boolean allSpawnsDone = gameState.getSpawnEvents().isEmpty();
+        boolean noPacketsActive = gameState.getPackets().isEmpty();
+        boolean allBuffersEmpty = gameState.allSystemBuffersAreEmpty();
 
-            System.out.println("LEVEL COMPLETE - All packets processed and all systems are clear.");
+        if (allSpawnsDone && noPacketsActive && allBuffersEmpty && gameState.getTotalPacketsSpawned() > 0) {
             gameLoop.stop();
-            // TODO: Show Level Complete screen
+            // استفاده از متد جدید activate با یک لامبدا برای پاس دادن دیتا
+            ScreenController.getInstance().activate(Screen.END_SCREEN, (EndScreenController c) -> {
+                c.initializeData(gameState, true); // true = isWin
+            });
         }
     }
-
     private Packet createPacketFromType(String packetType, Point2D position) {
         switch (packetType) {
             case "SQUARE_MESSENGER":

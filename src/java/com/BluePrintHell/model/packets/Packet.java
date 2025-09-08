@@ -8,101 +8,92 @@ import com.BluePrintHell.model.network.NetworkSystem;
 import javafx.geometry.Point2D;
 
 public abstract class Packet {
-    // The logical point that stays on the wire
-    protected Point2D anchorPosition;
-    // The visual displacement from the anchor, caused by impacts
-    protected Point2D visualOffset;
-
+    protected Point2D position;
     protected Connection currentConnection;
     protected Port destinationPort;
     protected double currentSpeed;
     protected Point2D velocity;
-    protected double noise;
+    protected double noise = 0;
+    private final int size; // اندازه پکت برای مقایسه با نویز. از این به بعد final است
 
-    public Packet(Point2D startPosition) {
-        this.anchorPosition = startPosition;
-        this.visualOffset = Point2D.ZERO;
+    // کانستراکتور آپدیت شد تا اندازه را به عنوان ورودی اصلی بگیرد
+    public Packet(Point2D startPosition, int size) {
+        this.position = startPosition;
         this.velocity = Point2D.ZERO;
         this.currentSpeed = 0;
-        this.noise = 0;
+        this.size = size;
+    }
+
+    public Point2D getVisualPosition() {
+        return position;
     }
 
     public void launch(Connection connection) {
         this.currentConnection = connection;
         this.destinationPort = connection.getEndPort();
-        if (this.currentConnection != null) {
-            this.currentConnection.setPacketOnWire(this);
-        }
     }
 
     public void update(double deltaTime) {
-        // --- 1. Move the anchor point along the wire ---
+        // اگر پکت شرایط از دست رفتن را داشت، آن را به GameState اطلاع می‌دهیم
+        if (isLost()) {
+            GameState gs = getParentGameState();
+            if (gs != null) {
+                gs.losePacket(this);
+            }
+            return; // آپدیت را متوقف می‌کنیم
+        }
+
         if (destinationPort != null) {
             Point2D destCenter = new Point2D(
                     destinationPort.getPosition().getX() + 6, // PORT_SIZE / 2
                     destinationPort.getPosition().getY() + 6
             );
 
-            Point2D direction = destCenter.subtract(anchorPosition).normalize();
+            Point2D direction = destCenter.subtract(position).normalize();
             this.velocity = direction.multiply(currentSpeed);
-            this.anchorPosition = anchorPosition.add(velocity.multiply(deltaTime));
+            this.position = position.add(velocity.multiply(deltaTime));
 
-            // --- Handle arrival at destination ---
-            if (anchorPosition.distance(destCenter) < 2.0) {
+            if (position.distance(destCenter) < 2.0) {
                 NetworkSystem destSystem = destinationPort.getParentSystem();
                 destSystem.receivePacket(this);
-
-                if (this.currentConnection != null) {
-                    this.currentConnection.clearPacket();
-                }
-
-                this.getParentGameState().removePacket(this);
-
+                getParentGameState().removePacket(this); // از لیست پکت‌های فعال حذف می‌شود
                 this.destinationPort = null;
                 this.currentConnection = null;
             }
         }
-
-        // --- 2. Gradually reduce the visual offset back to zero ---
-        if (visualOffset.magnitude() > 0.1) {
-            visualOffset = visualOffset.multiply(0.95);
-        } else {
-            visualOffset = Point2D.ZERO;
-        }
     }
 
-    public void applyForce(Point2D force) {
-        this.visualOffset = this.visualOffset.add(force);
-    }
-
-    // --- Position Management ---
-    public void setPosition(Point2D position) {
-        this.anchorPosition = position;
-    }
-
-    public Point2D getPosition() {
-        return anchorPosition;
-    }
-
-    public Point2D getVisualPosition() {
-        return anchorPosition.add(visualOffset);
-    }
-
-    // --- Abstract Methods ---
     public abstract int getCoinValue();
-    public abstract int getSize();
     public abstract boolean isCompatibleWith(PortShape shape);
 
-    // --- Other Methods ---
-    public void addNoise(double amount) {
-        this.noise += amount;
-    }
+    public Point2D getPosition() { return position; }
+    public void setPosition(Point2D position) { this.position = position; }
 
     protected GameState getParentGameState() {
-        if (currentConnection != null && currentConnection.getStartPort() != null &&
-                currentConnection.getStartPort().getParentSystem() != null) {
+        if(currentConnection != null) {
             return currentConnection.getStartPort().getParentSystem().getParentGameState();
         }
         return null;
+    }
+
+    // این متد دیگر abstract نیست چون مقدار آن در کانستراکتور مشخص می‌شود
+    public int getSize() {
+        return this.size;
+    }
+
+    public void addNoise(double amount) {
+        this.noise += amount;
+        System.out.println("INFO: Noise added. Current noise: " + this.noise + ", Size: " + this.size);
+    }
+
+    // متد جدید برای چک کردن از بین رفتن پکت
+    public boolean isLost() {
+        // طبق داکیومنت: اگر میزان نویز از اندازه‌اش بیشتر شود، آن پکت از دست خواهد رفت
+        return noise > size;
+    }
+
+    public void applyForce(Point2D force) {
+        // این نیرو به صورت آنی به سرعت اضافه می‌شود
+        this.velocity = this.velocity.add(force);
     }
 }

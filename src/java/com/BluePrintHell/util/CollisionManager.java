@@ -60,8 +60,8 @@ public class CollisionManager {
     private void resolveCollision(Packet p1, Packet p2, List<Packet> allPackets) {
         System.out.println("Collision detected between two packets!");
         // TODO: Add noise to p1 and p2
-        // p1.addNoise(NOISE_AMOUNT);
-        // p2.addNoise(NOISE_AMOUNT);
+        p1.addNoise(1);
+        p2.addNoise(1);
 
         // --- Impact Wave Logic ---
         Point2D collisionPoint = p1.getPosition().midpoint(p2.getPosition());

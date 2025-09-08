@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.BluePrintHell.controller.EndScreenController"
+      alignment="CENTER" spacing="20.0" styleClass="root-pane">
+
+    <padding>
+        <Insets top="100.0" bottom="100.0" left="50.0" right="50.0"/>
+    </padding>
+
+    <VBox alignment="CENTER" spacing="25.0" maxWidth="600"
+          style="-fx-background-color: rgba(26, 26, 30, 0.85); -fx-background-radius: 15; -fx-padding: 40;">
+
+        <Label fx:id="titleLabel" text="[TITLE]" styleClass="title-label"/>
+
+        <Label fx:id="statsLabel" text="[Statistics]"
+               style="-fx-font-family: 'Orbitron'; -fx-font-size: 20px; -fx-text-fill: white; -fx-text-alignment: center;"/>
+
+        <HBox alignment="CENTER" spacing="20.0">
+            <padding>
+                <Insets top="20.0"/>
+            </padding>
+            <children>
+                <Button fx:id="restartButton" text="Try Again" onAction="#onRestartClicked" managed="false" visible="false"/>
+
+                <Button fx:id="nextLevelButton" text="Next Level" onAction="#onNextLevelClicked" managed="false" visible="false"/>
+
+                <Button fx:id="menuButton" text="Back to Menu" onAction="#onMenuClicked"/>
+            </children>
+        </HBox>
+
+    </VBox>
+</VBox>

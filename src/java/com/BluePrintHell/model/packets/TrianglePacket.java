@@ -8,7 +8,7 @@ public class TrianglePacket extends Packet {
     private boolean isAccelerating = false;
 
     public TrianglePacket(Point2D startPosition) {
-        super(startPosition);
+        super(startPosition, 3);
     }
 
     @Override
