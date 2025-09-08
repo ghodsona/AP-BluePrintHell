@@ -16,7 +16,9 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
@@ -37,6 +39,7 @@ public class GameController {
     private GameState gameState;
     private GamePhase currentPhase = GamePhase.DESIGN;
     private CollisionManager collisionManager; // << متغیر جدید
+    private Button runButton; // << فیلد جدید برای دسترسی به دکمه Run
 
     private NetworkSystem selectedSystem = null; // سیستمی که برای جابجایی انتخاب شده
     private double offsetX; // فاصله افقی کلیک ماوس تا گوشه سیستم
@@ -59,6 +62,7 @@ public class GameController {
         this.wireLengthLabel = view.getWireLengthLabel();
         this.packetLossLabel = view.getPacketLossLabel();
         this.collisionManager = new CollisionManager(50); // 50 is the cell size
+        this.runButton = view.getRunButton(); // << گرفتن دکمه از View
 
         // ۲. گرفتن وضعیت بازی از GameManager
         this.gameState = GameManager.getInstance().getCurrentGameState();
@@ -78,6 +82,18 @@ public class GameController {
         calculateInitialPositions();
         setupGameLoop();
         gameLoop.start();
+    }
+
+    private boolean isNetworkReady() {
+        if (gameState == null) return false;
+
+        for (NetworkSystem system : gameState.getSystems()) {
+            if (!system.isFullyConnected()) {
+                System.out.println("Network not ready. System '" + system.getId() + "' has unconnected ports.");
+                return false; // اگر حتی یک سیستم هم کامل نباشد، شبکه آماده نیست
+            }
+        }
+        return true; // تمام سیستم‌ها کاملاً متصل هستند
     }
 
     private void calculateInitialPositions() {
@@ -341,6 +357,9 @@ public class GameController {
         }
     }
     private void renderGame() {
+        if (currentPhase == GamePhase.DESIGN) {
+            runButton.setDisable(!isNetworkReady());
+        }
         gc.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
         if (gameState == null) return;
         System.out.println("DEBUG: Packets to render: " + gameState.getPackets().size());
@@ -412,6 +431,22 @@ public class GameController {
         gc.setStroke(Color.web("#00f0ff", 0.5)); // آبی نئونی با شفافیت
         gc.setLineWidth(3);
         gc.strokeLine(x + 5, y + 5, x + SYSTEM_WIDTH - 5, y + 5);
+
+        double indicatorSize = 10;
+        double indicatorX = x + SYSTEM_WIDTH - indicatorSize - 5;
+        double indicatorY = y + 5;
+
+        if (system.isFullyConnected()) {
+            // چراغ سبز روشن برای وضعیت آماده
+            gc.setFill(Color.web("#39FF14")); // سبز نئونی
+            gc.setEffect(new DropShadow(15, Color.web("#39FF14")));
+        } else {
+            // چراغ قرمز خاموش برای وضعیت غیرآماده
+            gc.setFill(Color.web("#4d0000")); // قرمز تیره
+            gc.setEffect(null);
+        }
+        gc.fillOval(indicatorX, indicatorY, indicatorSize, indicatorSize);
+        gc.setEffect(null);
     }
 
     private void drawPacket(Packet packet) {
@@ -524,14 +559,17 @@ public class GameController {
         ScreenController.getInstance().activate(Screen.MAIN_MENU);
     }
 
+    @FXML
     public void onRunClicked() {
-        if (currentPhase == GamePhase.DESIGN) {
+        if (currentPhase == GamePhase.DESIGN && isNetworkReady()) {
             System.out.println("--- SIMULATION STARTED ---");
             if (gameState != null) {
                 gameState.resetGameTime();
             }
             currentPhase = GamePhase.SIMULATION;
-            // TODO: در اینجا می‌توانید دکمه Run را غیرفعال کنید
+            runButton.setDisable(true); // دکمه Run را غیرفعال کن
+        } else {
+            System.out.println("Cannot start simulation. All system ports must be connected.");
         }
     }
 }

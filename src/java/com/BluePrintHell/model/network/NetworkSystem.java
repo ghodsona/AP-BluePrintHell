@@ -69,4 +69,20 @@ public abstract class NetworkSystem {
     public void setPosition(Point2D position) { this.position = position; }
     public List<Port> getInputPorts() { return inputPorts; }
     public List<Port> getOutputPorts() { return outputPorts; }
+    public boolean isFullyConnected() {
+        // تمام پورت‌های ورودی را چک کن
+        for (Port port : inputPorts) {
+            if (!port.isConnected()) {
+                return false;
+            }
+        }
+        // تمام پورت‌های خروجی را چک کن
+        for (Port port : outputPorts) {
+            if (!port.isConnected()) {
+                return false;
+            }
+        }
+        // اگر همه‌ی پورت‌ها متصل بودند
+        return true;
+    }
 }

@@ -7,7 +7,6 @@ import javafx.geometry.Point2D;
 public class NormalSystem extends NetworkSystem {
     public NormalSystem(String id, Point2D position) { super(id, position); }
 
-    // In both NormalSystem.java and ReferenceSystem.java
     @Override
     public void update(double deltaTime) {
         if (packetBuffer.isEmpty() || wasJustArrived(packetBuffer.peek())) {
@@ -68,6 +67,23 @@ public class NormalSystem extends NetworkSystem {
         }
 
         return null; // No available port found at this moment
+    }
+
+    public boolean isFullyConnected() {
+        // تمام پورت‌های ورودی را چک کن
+        for (Port port : inputPorts) {
+            if (!port.isConnected()) {
+                return false;
+            }
+        }
+        // تمام پورت‌های خروجی را چک کن
+        for (Port port : outputPorts) {
+            if (!port.isConnected()) {
+                return false;
+            }
+        }
+        // اگر همه‌ی پورت‌ها متصل بودند
+        return true;
     }
 
 }

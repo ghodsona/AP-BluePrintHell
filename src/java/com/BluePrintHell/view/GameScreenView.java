@@ -17,6 +17,7 @@ public class GameScreenView extends BorderPane {
     private Label coinsLabel;
     private Label wireLengthLabel;
     private Label packetLossLabel;
+    private Button runButton; // << فیلد جدید
 
     public GameScreenView(GameController controller) {
         // ۱. ساختن تمام اجزای گرافیکی
@@ -24,6 +25,10 @@ public class GameScreenView extends BorderPane {
         coinsLabel = new Label("Coins: 0");
         wireLengthLabel = new Label("Wire Length: 1000");
         packetLossLabel = new Label("Packet Loss: 0%");
+
+        runButton = new Button("Run");
+        runButton.getStyleClass().add("button");
+        runButton.setOnAction(e -> controller.onRunClicked());
 
         Button shopButton = new Button("Shop");
         Button pauseButton = new Button("Pause");
@@ -69,4 +74,7 @@ public class GameScreenView extends BorderPane {
     public Label getCoinsLabel() { return coinsLabel; }
     public Label getWireLengthLabel() { return wireLengthLabel; }
     public Label getPacketLossLabel() { return packetLossLabel; }
+    public Button getRunButton() {
+        return runButton;
+    }
 }
