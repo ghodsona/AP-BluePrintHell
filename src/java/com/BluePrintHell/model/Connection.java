@@ -1,6 +1,5 @@
 package com.BluePrintHell.model;
 
-import com.BluePrintHell.model.packets.Packet; // << این import را اضافه کنید
 import javafx.geometry.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,46 +9,68 @@ public class Connection {
     private final Port endPort;
     private final List<Point2D> bendPoints = new ArrayList<>();
 
-    // --- این بخش جدید است ---
-    // این متغیر نگه می‌دارد که آیا پکتی در حال حاضر روی این سیم است یا نه
-    private Packet packetOnWire = null;
-
     public Connection(Port startPort, Port endPort) {
         this.startPort = startPort;
         this.endPort = endPort;
     }
 
     public double calculateLength() {
-        // TODO: منطق محاسبه طول سیم (با در نظر گرفتن نقاط انحنا)
-        return startPort.getPosition().distance(endPort.getPosition());
+        if (bendPoints.isEmpty()) {
+            return startPort.getCenterPosition().distance(endPort.getCenterPosition());
+        }
+
+        double totalLength = 0;
+        Point2D currentPoint = startPort.getCenterPosition();
+
+        for (Point2D bendPoint : bendPoints) {
+            totalLength += currentPoint.distance(bendPoint);
+            currentPoint = bendPoint;
+        }
+
+        totalLength += currentPoint.distance(endPort.getCenterPosition());
+        return totalLength;
     }
 
-    // ==========================================================
-    // === این سه متد جدید را به کلاس خود اضافه کنید ===
-    // ==========================================================
-    /**
-     * Checks if the wire is free (no packet is currently on it).
-     * @return true if the wire is free, false otherwise.
-     */
-    public boolean isFree() {
-        return packetOnWire == null;
+    public double getDistanceFromPoint(Point2D point) {
+        List<Point2D> pathPoints = new ArrayList<>();
+        pathPoints.add(startPort.getCenterPosition());
+        pathPoints.addAll(bendPoints);
+        pathPoints.add(endPort.getCenterPosition());
+
+        double minDistance = Double.MAX_VALUE;
+
+        for (int i = 0; i < pathPoints.size() - 1; i++) {
+            Point2D p1 = pathPoints.get(i);
+            Point2D p2 = pathPoints.get(i + 1);
+            double distanceToSegment = getDistanceToLineSegment(p1, p2, point);
+            if (distanceToSegment < minDistance) {
+                minDistance = distanceToSegment;
+            }
+        }
+
+        return minDistance;
     }
 
-    /**
-     * Marks the wire as occupied by a specific packet.
-     * @param packet The packet that is now on this wire.
-     */
-    public void setPacketOnWire(Packet packet) {
-        this.packetOnWire = packet;
-    }
+    private double getDistanceToLineSegment(Point2D p1, Point2D p2, Point2D point) {
+        // ✅✅✅ اصلاحیه اصلی اینجاست ✅✅✅
+        double dx = p2.getX() - p1.getX();
+        double dy = p2.getY() - p1.getY();
 
-    /**
-     * Marks the wire as free again. This is called when a packet reaches its destination.
-     */
-    public void clearPacket() {
-        this.packetOnWire = null;
+        // محاسبه فاصله به توان دو به صورت دستی
+        double l2 = dx * dx + dy * dy;
+
+        if (l2 == 0.0) return point.distance(p1);
+
+        double t = ((point.getX() - p1.getX()) * dx + (point.getY() - p1.getY()) * dy) / l2;
+        t = Math.max(0, Math.min(1, t));
+
+        Point2D closestPoint = new Point2D(
+                p1.getX() + t * dx,
+                p1.getY() + t * dy
+        );
+
+        return point.distance(closestPoint);
     }
-    // ==========================================================
 
     // --- Getters ---
     public Port getStartPort() { return startPort; }

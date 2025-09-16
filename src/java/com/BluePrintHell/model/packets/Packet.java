@@ -15,6 +15,11 @@ public abstract class Packet {
     protected Point2D velocity;
     protected double noise = 0;
     private final int size; // اندازه پکت برای مقایسه با نویز. از این به بعد final است
+    private static final double DEVIATION_THRESHOLD = 15.0; // حداکثر فاصله مجاز از سیم (به پیکسل)
+
+    public Connection getCurrentConnection() {
+        return currentConnection;
+    }
 
     // کانستراکتور آپدیت شد تا اندازه را به عنوان ورودی اصلی بگیرد
     public Packet(Point2D startPosition, int size) {
@@ -23,6 +28,8 @@ public abstract class Packet {
         this.currentSpeed = 0;
         this.size = size;
     }
+
+
 
     public Point2D getVisualPosition() {
         return position;
@@ -88,8 +95,23 @@ public abstract class Packet {
 
     // متد جدید برای چک کردن از بین رفتن پکت
     public boolean isLost() {
-        // طبق داکیومنت: اگر میزان نویز از اندازه‌اش بیشتر شود، آن پکت از دست خواهد رفت
-        return noise > size;
+        // شرط ۱: از دست رفتن به دلیل نویز زیاد
+        boolean lostByNoise = noise > size;
+        if (lostByNoise) {
+            System.out.println("PACKET LOST: Noise exceeded size.");
+            return true;
+        }
+
+        // شرط ۲: از دست رفتن به دلیل انحراف از سیم
+        if (currentConnection != null) {
+            double deviation = currentConnection.getDistanceFromPoint(this.position);
+            if (deviation > DEVIATION_THRESHOLD) {
+                System.out.println("PACKET LOST: Deviated from wire. Distance: " + deviation);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void applyForce(Point2D force) {

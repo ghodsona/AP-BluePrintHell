@@ -10,6 +10,7 @@ public class Port {
     private final PortShape shape;
     private Point2D position; // موقعیت دقیق روی صفحه
     private Connection attachedConnection;
+    private static final double PORT_SIZE = 12; // اندازه پورت را به عنوان ثابت تعریف می‌کنیم
 
     public Port(String id, NetworkSystem parentSystem, PortType type, PortShape shape) {
         this.id = id;
@@ -25,6 +26,11 @@ public class Port {
 
     public void connect(Connection connection) {
         this.attachedConnection = connection;
+    }
+
+    public Point2D getCenterPosition() {
+        if (position == null) return Point2D.ZERO;
+        return new Point2D(position.getX() + PORT_SIZE / 2, position.getY() + PORT_SIZE / 2);
     }
 
     public void disconnect() {

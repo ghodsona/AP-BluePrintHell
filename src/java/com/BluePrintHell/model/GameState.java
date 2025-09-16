@@ -31,6 +31,21 @@ public class GameState {
         this.totalPacketsSpawned++;
     }
 
+    public boolean isConnectionFree(Connection connection) {
+        if (connection == null) {
+            return false; // اتصال نامعتبر آزاد نیست
+        }
+        for (Packet packet : this.packets) {
+            // از متد کمکی که به کلاس Packet اضافه می‌کنیم استفاده می‌کند
+            if (packet.getCurrentConnection() == connection) {
+                // یک پکت روی این اتصال پیدا شد، پس آزاد نیست
+                return false;
+            }
+        }
+        // هیچ پکتی روی این اتصال پیدا نشد، پس آزاد است
+        return true;
+    }
+
     public int getLevelNumber() {
         return levelNumber;
     }

@@ -1,64 +1,58 @@
 {
   "levelNumber": 1,
-  "levelName": "Test: Collision Alley",
-  "initialWireLength": 1500.0,
-  "initialCoins": 10,
+  "levelName": "Test: Chaos Lab",
+  "initialWireLength": 3000.0,
+  "initialCoins": 20,
   "systems": [
     {
-      "id": "ref_A_Source",
+      "id": "ref_A_Victim_Source",
       "type": "REFERENCE",
       "x": 100,
-      "y": 300,
+      "y": 100,
       "inputPorts": [],
-      "outputPorts": [
-        { "id": "ref_A_out_sq", "shape": "SQUARE" },
-        { "id": "ref_A_out_tri", "shape": "TRIANGLE" }
-      ]
+      "outputPorts": [ { "id": "ref_A_out_sq", "shape": "SQUARE" } ]
     },
     {
-      "id": "sys_B_Funnel",
+      "id": "sys_B_Victim_Path",
       "type": "NORMAL",
-      "x": 450,
-      "y": 300,
-      "inputPorts": [
-        { "id": "sys_B_in_sq", "shape": "SQUARE" },
-        { "id": "sys_B_in_tri", "shape": "TRIANGLE" }
-      ],
-      "outputPorts": [
-        { "id": "sys_B_out_circ", "shape": "CIRCLE" }
-      ]
+      "x": 500,
+      "y": 100,
+      "inputPorts": [ { "id": "sys_B_in_sq", "shape": "SQUARE" } ],
+      "outputPorts": [ { "id": "sys_B_out_sq", "shape": "SQUARE" } ]
     },
     {
-      "id": "ref_C_Destination",
+      "id": "ref_C_Attacker_Source",
       "type": "REFERENCE",
-      "x": 800,
-      "y": 300,
+      "x": 100,
+      "y": 500,
+      "inputPorts": [],
+      "outputPorts": [ { "id": "ref_C_out_tri", "shape": "TRIANGLE" } ]
+    },
+    {
+      "id": "sys_D_Collision_Point",
+      "type": "NORMAL",
+      "x": 500,
+      "y": 350,
+      "inputPorts": [ { "id": "sys_D_in_tri", "shape": "TRIANGLE" } ],
+      "outputPorts": [ { "id": "sys_D_out_circ", "shape": "CIRCLE" } ]
+    },
+    {
+      "id": "ref_E_Destination",
+      "type": "REFERENCE",
+      "x": 900,
+      "y": 225,
       "inputPorts": [
-        { "id": "ref_C_in_circ", "shape": "CIRCLE" }
+        { "id": "ref_E_in_sq", "shape": "SQUARE" },
+        { "id": "ref_E_in_circ", "shape": "CIRCLE" }
       ],
       "outputPorts": []
     }
   ],
   "spawnEvents": [
-    {
-      "spawnTime": 1.0,
-      "sourceSystemId": "ref_A_Source",
-      "packetType": "SQUARE_MESSENGER"
-    },
-    {
-      "spawnTime": 1.2,
-      "sourceSystemId": "ref_A_Source",
-      "packetType": "TRIANGLE_MESSENGER"
-    },
-    {
-      "spawnTime": 2.0,
-      "sourceSystemId": "ref_A_Source",
-      "packetType": "SQUARE_MESSENGER"
-    },
-    {
-      "spawnTime": 2.2,
-      "sourceSystemId": "ref_A_Source",
-      "packetType": "TRIANGLE_MESSENGER"
-    }
+    { "spawnTime": 1.0, "sourceSystemId": "ref_A_Victim_Source", "packetType": "SQUARE_MESSENGER" },
+    { "spawnTime": 1.5, "sourceSystemId": "ref_A_Victim_Source", "packetType": "SQUARE_MESSENGER" },
+    { "spawnTime": 3.0, "sourceSystemId": "ref_C_Attacker_Source", "packetType": "TRIANGLE_MESSENGER" },
+    { "spawnTime": 3.1, "sourceSystemId": "ref_C_Attacker_Source", "packetType": "TRIANGLE_MESSENGER" },
+    { "spawnTime": 3.2, "sourceSystemId": "ref_C_Attacker_Source", "packetType": "TRIANGLE_MESSENGER" }
   ]
 }
