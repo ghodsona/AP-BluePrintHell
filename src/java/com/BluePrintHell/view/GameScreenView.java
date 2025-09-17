@@ -6,36 +6,30 @@ import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-// این کلاس ظاهر صفحه بازی را می‌سازد
 public class GameScreenView extends BorderPane {
 
     private Canvas gameCanvas;
     private Label coinsLabel;
     private Label wireLengthLabel;
     private Label packetLossLabel;
-    private Button runButton; // << فیلد جدید
+    private Button runButton;
 
     public GameScreenView(GameController controller) {
-        // ۱. ساختن تمام اجزای گرافیکی
-        gameCanvas = new Canvas(1200, 800); // اندازه اولیه
+        gameCanvas = new Canvas(1200, 800);
         coinsLabel = new Label("Coins: 0");
         wireLengthLabel = new Label("Wire Length: 1000");
         packetLossLabel = new Label("Packet Loss: 0%");
 
         runButton = new Button("Run");
-        runButton.getStyleClass().add("button");
-        runButton.setOnAction(e -> controller.onRunClicked());
-
         Button shopButton = new Button("Shop");
         Button pauseButton = new Button("Pause");
         Button menuButton = new Button("Menu");
-        Button runButton = new Button("Run"); // << دکمه جدید
 
-        // ۲. اعمال استایل‌ها
         this.getStyleClass().add("root-pane");
         coinsLabel.getStyleClass().add("hud-label");
         wireLengthLabel.getStyleClass().add("hud-label");
@@ -43,38 +37,36 @@ public class GameScreenView extends BorderPane {
         shopButton.getStyleClass().add("button");
         pauseButton.getStyleClass().add("button");
         menuButton.getStyleClass().add("button");
-        runButton.getStyleClass().add("button"); // << استایل دکمه
+        runButton.getStyleClass().add("button");
 
-        // ۳. اتصال اکشن دکمه‌ها به متدهای کنترلر
         shopButton.setOnAction(e -> controller.onShopClicked());
         pauseButton.setOnAction(e -> controller.onPauseClicked());
         menuButton.setOnAction(e -> controller.onMenuClicked());
         runButton.setOnAction(e -> controller.onRunClicked());
 
-        // ۴. چیدمان اجزا
-        // HUD در بالا
         HBox hud = new HBox(20, coinsLabel, wireLengthLabel, packetLossLabel);
         hud.setPadding(new Insets(10, 20, 10, 20));
         hud.setAlignment(Pos.CENTER_LEFT);
         hud.setStyle("-fx-background-color: rgba(0,0,0,0.3);");
         this.setTop(hud);
 
-        // دکمه‌ها در سمت راست
         VBox controls = new VBox(15, runButton, shopButton, pauseButton, menuButton);
         controls.setPadding(new Insets(20));
         controls.setAlignment(Pos.TOP_CENTER);
         this.setRight(controls);
 
-        // Canvas در وسط
-        this.setCenter(gameCanvas);
+        // ✅✅✅ تغییر اصلی اینجاست ✅✅✅
+        // یک AnchorPane می‌سازیم تا Canvas را در بر بگیرد
+        AnchorPane canvasContainer = new AnchorPane();
+        canvasContainer.getChildren().add(gameCanvas);
+
+        // حالا AnchorPane را در مرکز BorderPane قرار می‌دهیم
+        this.setCenter(canvasContainer);
     }
 
-    // Getters برای اینکه کنترلر بتواند به این اجزا دسترسی داشته باشد
     public Canvas getGameCanvas() { return gameCanvas; }
     public Label getCoinsLabel() { return coinsLabel; }
     public Label getWireLengthLabel() { return wireLengthLabel; }
     public Label getPacketLossLabel() { return packetLossLabel; }
-    public Button getRunButton() {
-        return runButton;
-    }
+    public Button getRunButton() { return runButton; }
 }

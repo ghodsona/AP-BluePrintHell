@@ -3,6 +3,7 @@ module com.BluePrintHell {
     requires javafx.controls;
     requires javafx.fxml;
     requires com.fasterxml.jackson.databind;
+    requires java.desktop;
 
     // اجازه می‌دهد FXML به کنترلرها دسترسی داشته باشد
     opens com.BluePrintHell.controller to javafx.fxml;

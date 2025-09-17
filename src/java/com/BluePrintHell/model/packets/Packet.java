@@ -7,6 +7,9 @@ import com.BluePrintHell.model.PortShape;
 import com.BluePrintHell.model.network.NetworkSystem;
 import javafx.geometry.Point2D;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Packet {
     protected Point2D position;
     protected Connection currentConnection;
@@ -14,62 +17,72 @@ public abstract class Packet {
     protected double currentSpeed;
     protected Point2D velocity;
     protected double noise = 0;
-    private final int size; // اندازه پکت برای مقایسه با نویز. از این به بعد final است
-    private static final double DEVIATION_THRESHOLD = 15.0; // حداکثر فاصله مجاز از سیم (به پیکسل)
+    private final int size;
+    private static final double DEVIATION_THRESHOLD = 15.0;
+    private List<Point2D> path;
+    private int currentPathIndex;
+
 
     public Connection getCurrentConnection() {
         return currentConnection;
     }
 
-    // کانستراکتور آپدیت شد تا اندازه را به عنوان ورودی اصلی بگیرد
     public Packet(Point2D startPosition, int size) {
         this.position = startPosition;
         this.velocity = Point2D.ZERO;
         this.currentSpeed = 0;
         this.size = size;
+        this.path = new ArrayList<>();
+        this.currentPathIndex = 0;
     }
-
-
 
     public Point2D getVisualPosition() {
         return position;
     }
 
+
     public void launch(Connection connection) {
         this.currentConnection = connection;
         this.destinationPort = connection.getEndPort();
+
+        this.path.clear();
+        this.path.add(connection.getStartPort().getCenterPosition());
+        this.path.addAll(connection.getBendPoints());
+        this.path.add(connection.getEndPort().getCenterPosition());
+
+        this.currentPathIndex = 0;
     }
 
     public void update(double deltaTime) {
-        // اگر پکت شرایط از دست رفتن را داشت، آن را به GameState اطلاع می‌دهیم
         if (isLost()) {
             GameState gs = getParentGameState();
             if (gs != null) {
                 gs.losePacket(this);
             }
-            return; // آپدیت را متوقف می‌کنیم
+            return;
         }
-
-        if (destinationPort != null) {
-            Point2D destCenter = new Point2D(
-                    destinationPort.getPosition().getX() + 6, // PORT_SIZE / 2
-                    destinationPort.getPosition().getY() + 6
-            );
-
-            Point2D direction = destCenter.subtract(position).normalize();
-            this.velocity = direction.multiply(currentSpeed);
-            this.position = position.add(velocity.multiply(deltaTime));
-
-            if (position.distance(destCenter) < 2.0) {
+        if (path == null || currentPathIndex >= path.size() - 1) {
+            if (destinationPort != null) {
                 NetworkSystem destSystem = destinationPort.getParentSystem();
                 destSystem.receivePacket(this);
-                getParentGameState().removePacket(this); // از لیست پکت‌های فعال حذف می‌شود
+                getParentGameState().removePacket(this);
                 this.destinationPort = null;
                 this.currentConnection = null;
             }
+            return;
+        }
+
+        Point2D target = path.get(currentPathIndex + 1);
+
+        Point2D direction = target.subtract(position).normalize();
+        this.velocity = direction.multiply(currentSpeed);
+        this.position = position.add(velocity.multiply(deltaTime));
+
+        if (position.distance(target) < 2.0) {
+            currentPathIndex++;
+            this.position = target;
         }
     }
-
     public abstract int getCoinValue();
     public abstract boolean isCompatibleWith(PortShape shape);
 
@@ -83,7 +96,6 @@ public abstract class Packet {
         return null;
     }
 
-    // این متد دیگر abstract نیست چون مقدار آن در کانستراکتور مشخص می‌شود
     public int getSize() {
         return this.size;
     }
@@ -93,16 +105,13 @@ public abstract class Packet {
         System.out.println("INFO: Noise added. Current noise: " + this.noise + ", Size: " + this.size);
     }
 
-    // متد جدید برای چک کردن از بین رفتن پکت
     public boolean isLost() {
-        // شرط ۱: از دست رفتن به دلیل نویز زیاد
         boolean lostByNoise = noise > size;
         if (lostByNoise) {
             System.out.println("PACKET LOST: Noise exceeded size.");
             return true;
         }
 
-        // شرط ۲: از دست رفتن به دلیل انحراف از سیم
         if (currentConnection != null) {
             double deviation = currentConnection.getDistanceFromPoint(this.position);
             if (deviation > DEVIATION_THRESHOLD) {
@@ -115,7 +124,6 @@ public abstract class Packet {
     }
 
     public void applyForce(Point2D force) {
-        // این نیرو به صورت آنی به سرعت اضافه می‌شود
         this.velocity = this.velocity.add(force);
     }
 }

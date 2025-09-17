@@ -50,6 +50,8 @@ public class GameState {
         return levelNumber;
     }
 
+    public double getPlayerWireLength() {return playerWireLength; }
+
     public void removePacket(Packet packet) {
         if (packet != null) {
             packetsToRemove.add(packet);
