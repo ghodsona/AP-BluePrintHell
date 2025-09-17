@@ -6,23 +6,22 @@ import com.BluePrintHell.model.Port;
 import com.BluePrintHell.model.PortShape;
 import com.BluePrintHell.model.network.NetworkSystem;
 import javafx.geometry.Point2D;
+import java.util.List;
 
 public abstract class Packet {
     protected Point2D position;
     protected Connection currentConnection;
     protected Port destinationPort;
     protected double currentSpeed;
-    protected Point2D velocity;
     protected double noise = 0;
     private final int size;
     private static final double DEVIATION_THRESHOLD = 15.0;
 
-    private double progressOnPath = 0.0;
-    private double pathLength = 0.0;
+    private List<Point2D> path;
+    private int currentPathIndex;
 
     public Packet(Point2D startPosition, int size) {
         this.position = startPosition;
-        this.velocity = Point2D.ZERO;
         this.currentSpeed = 0;
         this.size = size;
     }
@@ -34,8 +33,11 @@ public abstract class Packet {
     public void launch(Connection connection) {
         this.currentConnection = connection;
         this.destinationPort = connection.getEndPort();
-        this.pathLength = connection.calculateLength();
-        this.progressOnPath = 0.0;
+        this.path = connection.getSmoothPath(20);
+        this.currentPathIndex = 0;
+        if (!this.path.isEmpty()) {
+            this.position = this.path.get(0);
+        }
     }
 
     public void update(double deltaTime) {
@@ -47,67 +49,67 @@ public abstract class Packet {
             return;
         }
 
-        if (currentConnection != null) {
-            double step = (currentSpeed / pathLength) * deltaTime;
-            progressOnPath += step;
-
-            if (progressOnPath >= 1.0) {
+        if (path == null || currentPathIndex >= path.size() - 1) {
+            if (destinationPort != null) {
                 NetworkSystem destSystem = destinationPort.getParentSystem();
                 destSystem.receivePacket(this);
                 getParentGameState().removePacket(this);
                 this.destinationPort = null;
                 this.currentConnection = null;
-            } else {
-                this.position = currentConnection.getPointOnCurve(progressOnPath);
             }
+            return;
+        }
+
+        Point2D target = path.get(currentPathIndex + 1);
+        double distanceToTarget = position.distance(target);
+        double travelDistance = currentSpeed * deltaTime;
+
+        while (travelDistance >= distanceToTarget && currentPathIndex < path.size() - 1) {
+            travelDistance -= distanceToTarget;
+            position = target;
+            currentPathIndex++;
+            if (currentPathIndex >= path.size() - 1) {
+                break;
+            }
+            target = path.get(currentPathIndex + 1);
+            distanceToTarget = position.distance(target);
+        }
+
+        if (currentPathIndex < path.size() - 1 && distanceToTarget > 0) {
+            Point2D direction = target.subtract(position).normalize();
+            position = position.add(direction.multiply(travelDistance));
+        } else if (currentPathIndex >= path.size() - 1) {
+            position = path.get(path.size() - 1);
         }
     }
 
-    public Point2D getVisualPosition() {
-        return position;
+    public void applyForce(Point2D force) {
+        this.position = this.position.add(force.multiply(0.1));
+    }
+
+    public boolean isLost() {
+        boolean lostByNoise = noise > size;
+        if (lostByNoise) return true;
+        if (currentConnection != null) {
+            double deviation = currentConnection.getDistanceFromPoint(this.position);
+            if (deviation > DEVIATION_THRESHOLD) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public abstract int getCoinValue();
     public abstract boolean isCompatibleWith(PortShape shape);
-
+    public Point2D getVisualPosition() { return position; }
     public Point2D getPosition() { return position; }
     public void setPosition(Point2D position) { this.position = position; }
-
     protected GameState getParentGameState() {
         if(currentConnection != null) {
             return currentConnection.getStartPort().getParentSystem().getParentGameState();
         }
         return null;
     }
-
-    public int getSize() {
-        return this.size;
-    }
-
-    public void addNoise(double amount) {
-        this.noise += amount;
-    }
-
-    public boolean isLost() {
-        boolean lostByNoise = noise > size;
-        if (lostByNoise) {
-            System.out.println("DEBUG: Packet " + this.hashCode() + " is lost. Reason: Noise exceeded size. (Noise: " + noise + ", Size: " + size + ")");
-            return true;
-        }
-
-        if (currentConnection != null) {
-            double deviation = currentConnection.getDistanceFromPoint(this.position);
-            if (deviation > DEVIATION_THRESHOLD) {
-                System.out.println("DEBUG: Packet " + this.hashCode() + " is lost. Reason: Deviated from wire. (Deviation: " + deviation + ", Threshold: " + DEVIATION_THRESHOLD + ")");
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public void applyForce(Point2D force) {
-        // این نیرو مستقیماً موقعیت را جابجا می‌کند تا انحراف ایجاد شود
-        this.position = this.position.add(force.multiply(0.1));
-    }
+    public int getSize() { return this.size; }
+    public void addNoise(double amount) { this.noise += amount; }
 }
