@@ -203,6 +203,7 @@ public class GameController {
         return true;
     }
 
+
     private void drawConnection(Connection connection) {
         if (isConnectionValid(connection)) {
             gc.setStroke(Color.web("#7a7f8a", 0.7));
@@ -210,15 +211,30 @@ public class GameController {
             gc.setStroke(Color.web("#ff3b3b", 0.9));
         }
         gc.setLineWidth(4);
-        List<Point2D> pathPoints = new ArrayList<>();
-        pathPoints.add(connection.getStartPort().getCenterPosition());
-        pathPoints.addAll(connection.getBendPoints());
-        pathPoints.add(connection.getEndPort().getCenterPosition());
-        for (int i = 0; i < pathPoints.size() - 1; i++) {
-            Point2D p1 = pathPoints.get(i);
-            Point2D p2 = pathPoints.get(i + 1);
-            gc.strokeLine(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+
+        List<Point2D> points = connection.getPathPoints();
+        if (points.size() < 2) return;
+
+        gc.beginPath();
+        gc.moveTo(points.get(0).getX(), points.get(0).getY());
+
+        for (int i = 0; i < points.size() - 1; i++) {
+            Point2D p0 = points.get(i);
+            Point2D p1 = points.get(i + 1);
+
+            Point2D control1 = (i > 0) ? points.get(i - 1) : p0;
+            Point2D control2 = (i < points.size() - 2) ? points.get(i + 2) : p1;
+
+            // Catmull-Rom to Cubic Bezier conversion for control points
+            Point2D c1 = p0.add(p1.subtract(control1).multiply(1.0 / 6.0));
+            Point2D c2 = p1.subtract(control2.subtract(p0).multiply(1.0 / 6.0));
+
+            gc.bezierCurveTo(c1.getX(), c1.getY(), c2.getX(), c2.getY(), p1.getX(), p1.getY());
         }
+
+        gc.stroke();
+        gc.closePath();
+
         gc.setFill(Color.web("#00f0ff"));
         for (Point2D bendPoint : connection.getBendPoints()) {
             gc.fillOval(bendPoint.getX() - BEND_POINT_SIZE / 2, bendPoint.getY() - BEND_POINT_SIZE / 2, BEND_POINT_SIZE, BEND_POINT_SIZE);
