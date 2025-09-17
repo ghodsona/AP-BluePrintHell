@@ -112,7 +112,7 @@ public class GameController {
         if (selectedBendPoint != null) {
             Point2D originalPosition = selectedBendPoint;
             selectedConnectionForBending.getBendPoints().set(selectedBendPointIndex, currentPoint);
-            if (isConnectionValid(selectedConnectionForBending)) {
+            if (isConnectionValid(selectedConnectionForBending) && getTotalWireLength() <= gameState.getPlayerWireLength()) {
                 selectedBendPoint = currentPoint;
             } else {
                 selectedConnectionForBending.getBendPoints().set(selectedBendPointIndex, originalPosition);
@@ -191,10 +191,7 @@ public class GameController {
 
     private boolean isConnectionValid(Connection conn) {
         if (conn == null) return false;
-        List<Point2D> pathPoints = new ArrayList<>();
-        pathPoints.add(conn.getStartPort().getCenterPosition());
-        pathPoints.addAll(conn.getBendPoints());
-        pathPoints.add(conn.getEndPort().getCenterPosition());
+        List<Point2D> pathPoints = conn.getPathPoints();
         for (int i = 0; i < pathPoints.size() - 1; i++) {
             if (isSegmentIntersectingAnySystem(pathPoints.get(i), pathPoints.get(i + 1), conn.getStartPort(), conn.getEndPort())) {
                 return false;
@@ -203,6 +200,20 @@ public class GameController {
         return true;
     }
 
+    private boolean isNetworkReady() {
+        if (gameState == null) return false;
+        for (NetworkSystem system : gameState.getSystems()) {
+            if (!system.isFullyConnected()) {
+                return false;
+            }
+        }
+        for (Connection conn : gameState.getConnections()) {
+            if (!isConnectionValid(conn)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     private void drawConnection(Connection connection) {
         if (isConnectionValid(connection)) {
@@ -211,30 +222,21 @@ public class GameController {
             gc.setStroke(Color.web("#ff3b3b", 0.9));
         }
         gc.setLineWidth(4);
-
         List<Point2D> points = connection.getPathPoints();
         if (points.size() < 2) return;
-
         gc.beginPath();
         gc.moveTo(points.get(0).getX(), points.get(0).getY());
-
         for (int i = 0; i < points.size() - 1; i++) {
             Point2D p0 = points.get(i);
             Point2D p1 = points.get(i + 1);
-
             Point2D control1 = (i > 0) ? points.get(i - 1) : p0;
             Point2D control2 = (i < points.size() - 2) ? points.get(i + 2) : p1;
-
-            // Catmull-Rom to Cubic Bezier conversion for control points
             Point2D c1 = p0.add(p1.subtract(control1).multiply(1.0 / 6.0));
             Point2D c2 = p1.subtract(control2.subtract(p0).multiply(1.0 / 6.0));
-
             gc.bezierCurveTo(c1.getX(), c1.getY(), c2.getX(), c2.getY(), p1.getX(), p1.getY());
         }
-
         gc.stroke();
         gc.closePath();
-
         gc.setFill(Color.web("#00f0ff"));
         for (Point2D bendPoint : connection.getBendPoints()) {
             gc.fillOval(bendPoint.getX() - BEND_POINT_SIZE / 2, bendPoint.getY() - BEND_POINT_SIZE / 2, BEND_POINT_SIZE, BEND_POINT_SIZE);
@@ -319,16 +321,6 @@ public class GameController {
         }
     }
 
-    private boolean isNetworkReady() {
-        if (gameState == null) return false;
-        for (NetworkSystem system : gameState.getSystems()) {
-            if (!system.isFullyConnected()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private void calculateInitialPositions() {
         for (NetworkSystem system : gameState.getSystems()) {
             updatePortPositions(system);
@@ -365,7 +357,6 @@ public class GameController {
                 }
                 double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
                 lastUpdate = now;
-
                 if (currentPhase == GamePhase.SIMULATION) {
                     updateGame(deltaTime);
                 }
@@ -522,7 +513,6 @@ public class GameController {
     }
 
     public void onPauseClicked() {
-        // TODO: Implement pause logic
     }
 
     public void onMenuClicked() {
