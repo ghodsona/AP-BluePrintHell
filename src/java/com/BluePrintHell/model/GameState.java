@@ -71,8 +71,8 @@ public class GameState {
     }
 
     public void losePacket(Packet packet) {
-        if (packet != null && !packetsToRemove.contains(packet)) { // برای جلوگیری از شمارش چندباره
-            System.out.println("PACKET LOST: A packet was lost due to excessive noise or other reasons.");
+        if (packet != null && !packetsToRemove.contains(packet)) {
+            System.out.println("!!! PACKET LOST !!! - Packet " + packet.hashCode() + " is being removed from the game.");
             this.packetsLost++;
             removePacket(packet);
         }

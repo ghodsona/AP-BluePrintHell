@@ -90,14 +90,19 @@ public abstract class Packet {
 
     public boolean isLost() {
         boolean lostByNoise = noise > size;
-        if (lostByNoise) return true;
+        if (lostByNoise) {
+            System.out.println("DEBUG: Packet " + this.hashCode() + " is lost. Reason: Noise exceeded size. (Noise: " + noise + ", Size: " + size + ")");
+            return true;
+        }
 
         if (currentConnection != null) {
             double deviation = currentConnection.getDistanceFromPoint(this.position);
             if (deviation > DEVIATION_THRESHOLD) {
+                System.out.println("DEBUG: Packet " + this.hashCode() + " is lost. Reason: Deviated from wire. (Deviation: " + deviation + ", Threshold: " + DEVIATION_THRESHOLD + ")");
                 return true;
             }
         }
+
         return false;
     }
 

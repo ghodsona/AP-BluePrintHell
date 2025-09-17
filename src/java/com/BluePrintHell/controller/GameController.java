@@ -109,13 +109,14 @@ public class GameController {
     private void onMouseDragged(MouseEvent event) {
         if (currentPhase != GamePhase.DESIGN) return;
         Point2D currentPoint = new Point2D(event.getX(), event.getY());
+
         if (selectedBendPoint != null) {
             Point2D originalPosition = selectedBendPoint;
             selectedConnectionForBending.getBendPoints().set(selectedBendPointIndex, currentPoint);
-            if (isConnectionValid(selectedConnectionForBending) && getTotalWireLength() <= gameState.getPlayerWireLength()) {
-                selectedBendPoint = currentPoint;
-            } else {
+            if (!isConnectionValid(selectedConnectionForBending)) {
                 selectedConnectionForBending.getBendPoints().set(selectedBendPointIndex, originalPosition);
+            } else {
+                selectedBendPoint = currentPoint;
             }
         } else if (selectedSystem != null) {
             double newX = event.getX() - offsetX;
@@ -132,7 +133,7 @@ public class GameController {
             Port endPort = getPortAt(event.getX(), event.getY());
             if (endPort != null && endPort.getType() == PortType.INPUT && !endPort.isConnected() && endPort.getParentSystem() != wireStartPort.getParentSystem()) {
                 Connection newConnection = new Connection(wireStartPort, endPort);
-                if (isConnectionValid(newConnection) && getTotalWireLength() + newConnection.calculateLength() <= gameState.getPlayerWireLength()) {
+                if (isConnectionValid(newConnection)) {
                     gameState.addConnection(newConnection);
                     wireStartPort.connect(newConnection);
                     endPort.connect(newConnection);
@@ -175,14 +176,17 @@ public class GameController {
         }
     }
 
-    private boolean isSegmentIntersectingAnySystem(Point2D p1, Point2D p2, Port startPort, Port endPort) {
+    private boolean isSegmentIntersectingAnySystem(Point2D p1, Point2D p2, Connection connection) {
         for (NetworkSystem system : gameState.getSystems()) {
-            if (system == startPort.getParentSystem() || (endPort != null && system == endPort.getParentSystem())) {
+            if (system == connection.getStartPort().getParentSystem() || system == connection.getEndPort().getParentSystem()) {
                 continue;
             }
             double sysX = system.getPosition().getX();
             double sysY = system.getPosition().getY();
-            if (new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY()).intersects(sysX, sysY, SYSTEM_WIDTH, SYSTEM_HEIGHT)) {
+            if (Line2D.linesIntersect(p1.getX(), p1.getY(), p2.getX(), p2.getY(), sysX, sysY, sysX + SYSTEM_WIDTH, sysY) ||
+                    Line2D.linesIntersect(p1.getX(), p1.getY(), p2.getX(), p2.getY(), sysX + SYSTEM_WIDTH, sysY, sysX + SYSTEM_WIDTH, sysY + SYSTEM_HEIGHT) ||
+                    Line2D.linesIntersect(p1.getX(), p1.getY(), p2.getX(), p2.getY(), sysX + SYSTEM_WIDTH, sysY + SYSTEM_HEIGHT, sysX, sysY + SYSTEM_HEIGHT) ||
+                    Line2D.linesIntersect(p1.getX(), p1.getY(), p2.getX(), p2.getY(), sysX, sysY + SYSTEM_HEIGHT, sysX, sysY)) {
                 return true;
             }
         }
@@ -193,7 +197,7 @@ public class GameController {
         if (conn == null) return false;
         List<Point2D> pathPoints = conn.getPathPoints();
         for (int i = 0; i < pathPoints.size() - 1; i++) {
-            if (isSegmentIntersectingAnySystem(pathPoints.get(i), pathPoints.get(i + 1), conn.getStartPort(), conn.getEndPort())) {
+            if (isSegmentIntersectingAnySystem(pathPoints.get(i), pathPoints.get(i + 1), conn)) {
                 return false;
             }
         }
@@ -202,16 +206,23 @@ public class GameController {
 
     private boolean isNetworkReady() {
         if (gameState == null) return false;
+
+        if (getTotalWireLength() > gameState.getPlayerWireLength()) {
+            return false;
+        }
+
         for (NetworkSystem system : gameState.getSystems()) {
             if (!system.isFullyConnected()) {
                 return false;
             }
         }
+
         for (Connection conn : gameState.getConnections()) {
             if (!isConnectionValid(conn)) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -245,12 +256,7 @@ public class GameController {
 
     private void drawPreviewWire() {
         Point2D start = wireStartPort.getCenterPosition();
-        double previewLength = start.distance(liveWireEndPoint);
-        if (getTotalWireLength() + previewLength > gameState.getPlayerWireLength() || isSegmentIntersectingAnySystem(start, liveWireEndPoint, wireStartPort, null)) {
-            gc.setStroke(Color.RED);
-        } else {
-            gc.setStroke(Color.web("#00f0ff", 0.9));
-        }
+        gc.setStroke(Color.web("#00f0ff", 0.9));
         gc.setLineWidth(3);
         gc.strokeLine(start.getX(), start.getY(), liveWireEndPoint.getX(), liveWireEndPoint.getY());
     }
@@ -266,8 +272,21 @@ public class GameController {
     private void updateHUD() {
         if (gameState == null) return;
         coinsLabel.setText("Coins: " + gameState.getPlayerCoins());
-        double remainingWire = gameState.getPlayerWireLength() - getTotalWireLength();
-        wireLengthLabel.setText(String.format("Wire Length: %.0f", remainingWire));
+
+        double usedWire = getTotalWireLength();
+        double maxWire = gameState.getPlayerWireLength();
+        double remainingWire = maxWire - usedWire;
+
+        wireLengthLabel.setText(String.format("Remaining Wire: %.0f / %.0f", remainingWire, maxWire));
+
+        if (remainingWire < 0) {
+            wireLengthLabel.getStyleClass().removeAll("hud-label");
+            wireLengthLabel.getStyleClass().add("hud-label-error");
+        } else {
+            wireLengthLabel.getStyleClass().removeAll("hud-label-error");
+            wireLengthLabel.getStyleClass().add("hud-label");
+        }
+
         int total = gameState.getTotalPacketsSpawned();
         int lost = gameState.getPacketsLost();
         double lossPercentage = (total == 0) ? 0 : ((double) lost / total) * 100;

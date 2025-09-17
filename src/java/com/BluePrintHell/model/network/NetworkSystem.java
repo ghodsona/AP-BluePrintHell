@@ -34,15 +34,14 @@ public abstract class NetworkSystem {
     public void receivePacket(Packet packet) {
         if (packetBuffer.size() < BUFFER_CAPACITY) {
             packetBuffer.add(packet);
-            justArrivedPackets.add(packet); // Mark this packet as newly arrived
+            justArrivedPackets.add(packet);
 
             if (this instanceof NormalSystem || (this instanceof ReferenceSystem && !this.getInputPorts().isEmpty())) {
                 this.getParentGameState().addCoins(packet.getCoinValue());
             }
         } else {
-            this.getParentGameState().incrementPacketsLost();
-            System.err.println("System " + id + " buffer is full. Packet lost.");
-            // TODO: Update packetLoss in GameState
+            System.out.println("DEBUG: Packet " + packet.hashCode() + " is lost. Reason: Buffer is full for system " + this.id);
+            this.getParentGameState().losePacket(packet); // از متد مرکزی برای از دست دادن پکت استفاده می‌کنیم
         }
     }
 
