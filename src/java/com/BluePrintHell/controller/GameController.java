@@ -1,5 +1,6 @@
 package com.BluePrintHell.controller;
 
+import com.BluePrintHell.util.SaveManager;
 import com.BluePrintHell.GameManager;
 import com.BluePrintHell.GamePhase;
 import com.BluePrintHell.model.*;
@@ -39,6 +40,8 @@ public class GameController {
     private GamePhase currentPhase = GamePhase.DESIGN;
     private CollisionManager collisionManager;
     private Button runButton;
+    private long lastSaveTime = 0;
+    private static final long SAVE_INTERVAL_NANO = 5_000_000_000L;
 
     private NetworkSystem selectedSystem = null;
     private double offsetX, offsetY;
@@ -77,6 +80,9 @@ public class GameController {
         gameCanvas.setOnMouseMoved(this::onMouseMoved);
         calculateInitialPositions();
         setupGameLoop();
+
+        lastSaveTime = System.nanoTime();
+
         gameLoop.start();
     }
 
@@ -373,9 +379,17 @@ public class GameController {
                 }
                 double deltaTime = (now - lastUpdate) / 1_000_000_000.0;
                 lastUpdate = now;
+
                 if (currentPhase == GamePhase.SIMULATION) {
                     updateGame(deltaTime);
                 }
+
+                if (now - lastSaveTime > SAVE_INTERVAL_NANO) {
+                    SaveManager.saveGame(gameState);
+                    lastSaveTime = now;
+                    System.out.println("Game autosaved.");
+                }
+
                 renderGame();
                 updateHUD();
             }
@@ -533,6 +547,7 @@ public class GameController {
 
     public void onMenuClicked() {
         gameLoop.stop();
+        SaveManager.deleteAutoSave();
         ScreenController.getInstance().activate(Screen.MAIN_MENU);
     }
 

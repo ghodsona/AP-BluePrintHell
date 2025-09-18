@@ -9,6 +9,9 @@ public class ReferenceSystem extends NetworkSystem {
     public ReferenceSystem(String id, Point2D position) {
         super(id, position);
     }
+    public ReferenceSystem() {
+        super(null, null);
+    }
 
     @Override
     public void receivePacket(Packet packet) {

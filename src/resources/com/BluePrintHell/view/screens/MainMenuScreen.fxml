@@ -14,6 +14,7 @@
 
     <Label text="BLUEPRINT HELL" styleClass="title-label"/>
 
+    <Button fx:id="continueButton" text="Continue Game" onAction="#onContinueClicked" managed="false" visible="false"/>
     <Button fx:id="startGameButton" text="Start Game" onAction="#onStartGameClicked"/>
     <Button fx:id="levelsButton" text="Levels" onAction="#onLevelsClicked"/>
     <Button fx:id="settingsButton" text="Settings" onAction="#onSettingsClicked"/>

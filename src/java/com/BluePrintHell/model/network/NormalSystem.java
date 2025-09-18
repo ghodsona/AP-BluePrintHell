@@ -9,6 +9,9 @@ public class NormalSystem extends NetworkSystem {
     public NormalSystem(String id, Point2D position) {
         super(id, position);
     }
+    public NormalSystem() {
+        super(null, null);
+    }
 
     @Override
     public void update(double deltaTime) {

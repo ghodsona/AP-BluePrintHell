@@ -10,6 +10,10 @@ public class SquarePacket extends Packet {
         super(startPosition, 2);
     }
 
+    public SquarePacket() {
+        super(null, 2);
+    }
+
     @Override
     public void launch(Connection connection) {
         super.launch(connection);

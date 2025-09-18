@@ -5,9 +5,25 @@ import com.BluePrintHell.model.GameState;
 import com.BluePrintHell.model.Port;
 import com.BluePrintHell.model.PortShape;
 import com.BluePrintHell.model.network.NetworkSystem;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javafx.geometry.Point2D;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "packetType"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = SquarePacket.class, name = "SquarePacket"),
+        @JsonSubTypes.Type(value = TrianglePacket.class, name = "TrianglePacket"),
+        @JsonSubTypes.Type(value = CirclePacket.class, name = "CirclePacket")
+})
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public abstract class Packet {
     protected Point2D position;
     protected Connection currentConnection;

@@ -1,18 +1,23 @@
 package com.BluePrintHell.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javafx.geometry.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public class Connection {
-    private final Port startPort;
-    private final Port endPort;
+    private Port startPort;
+    private Port endPort;
     private final List<Point2D> bendPoints = new ArrayList<>();
 
     public Connection(Port startPort, Port endPort) {
         this.startPort = startPort;
         this.endPort = endPort;
     }
+    private Connection() {}
+
 
     public List<Point2D> getPathPoints() {
         List<Point2D> pathPoints = new ArrayList<>();
@@ -84,4 +89,5 @@ public class Connection {
     public Port getStartPort() { return startPort; }
     public Port getEndPort() { return endPort; }
     public List<Point2D> getBendPoints() { return bendPoints; }
+
 }

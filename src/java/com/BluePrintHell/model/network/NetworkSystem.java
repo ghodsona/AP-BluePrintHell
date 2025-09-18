@@ -3,11 +3,27 @@ package com.BluePrintHell.model.network;
 import com.BluePrintHell.model.GameState;
 import com.BluePrintHell.model.packets.Packet;
 import com.BluePrintHell.model.Port;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import javafx.geometry.Point2D;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = NormalSystem.class, name = "NormalSystem"),
+        @JsonSubTypes.Type(value = ReferenceSystem.class, name = "ReferenceSystem")
+})
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public abstract class NetworkSystem {
     protected final String id;
     protected Point2D position;

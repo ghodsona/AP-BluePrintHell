@@ -13,6 +13,10 @@ public class CirclePacket extends Packet {
         super(startPosition, 1);
     }
 
+    public CirclePacket() {
+        super(null, 2);
+    }
+
     @Override
     public void launch(Connection connection) {
         super.launch(connection);

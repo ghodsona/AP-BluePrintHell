@@ -11,6 +11,10 @@ public class TrianglePacket extends Packet {
         super(startPosition, 3);
     }
 
+    public TrianglePacket() {
+        super(null, 3);
+    }
+
     @Override
     public void launch(Connection connection) {
         super.launch(connection);
