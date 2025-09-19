@@ -10,20 +10,29 @@ import java.util.List;
 public class Connection {
     private Port startPort;
     private Port endPort;
-    private final List<Point2D> bendPoints = new ArrayList<>();
+    private List<Point2D> bendPoints = new ArrayList<>();
 
     public Connection(Port startPort, Port endPort) {
         this.startPort = startPort;
         this.endPort = endPort;
+        this.bendPoints = new ArrayList<>();
     }
-    private Connection() {}
 
+    public Connection() {
+        this.bendPoints = new ArrayList<>();
+    }
 
     public List<Point2D> getPathPoints() {
         List<Point2D> pathPoints = new ArrayList<>();
-        pathPoints.add(startPort.getCenterPosition());
-        pathPoints.addAll(bendPoints);
-        pathPoints.add(endPort.getCenterPosition());
+        if (startPort != null && startPort.getCenterPosition() != null) {
+            pathPoints.add(startPort.getCenterPosition());
+        }
+        if (bendPoints != null) {
+            pathPoints.addAll(bendPoints);
+        }
+        if (endPort != null && endPort.getCenterPosition() != null) {
+            pathPoints.add(endPort.getCenterPosition());
+        }
         return pathPoints;
     }
 
@@ -87,7 +96,11 @@ public class Connection {
     }
 
     public Port getStartPort() { return startPort; }
-    public Port getEndPort() { return endPort; }
-    public List<Point2D> getBendPoints() { return bendPoints; }
+    public void setStartPort(Port startPort) { this.startPort = startPort; }
 
+    public Port getEndPort() { return endPort; }
+    public void setEndPort(Port endPort) { this.endPort = endPort; }
+
+    public List<Point2D> getBendPoints() { return bendPoints; }
+    public void setBendPoints(List<Point2D> bendPoints) { this.bendPoints = bendPoints != null ? bendPoints : new ArrayList<>(); }
 }

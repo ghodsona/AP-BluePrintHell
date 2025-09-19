@@ -2,11 +2,11 @@ package com.BluePrintHell.controller;
 
 import com.BluePrintHell.GameManager;
 import com.BluePrintHell.model.GameState;
-import com.BluePrintHell.model.leveldata.LevelData; // import
-import com.BluePrintHell.util.GameBuilder;
-import com.BluePrintHell.util.LevelLoader; // import
+import com.BluePrintHell.model.leveldata.LevelData;
+import com.BluePrintHell.util.LevelLoader;
+import com.BluePrintHell.util.ProgressiveGameBuilder;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML; 
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
 public class LevelSelectController {
@@ -17,27 +17,28 @@ public class LevelSelectController {
         String levelText = clickedButton.getText().replace("Level ", "");
         int levelNumber = Integer.parseInt(levelText);
 
-        System.out.println("Loading Level " + levelNumber + "...");
-
-        // مرحله را از فایل JSON بارگذاری کن
         LevelData loadedData = LevelLoader.loadLevel(levelNumber);
-
-        if (loadedData != null) {
-            System.out.println("Level '" + loadedData.getLevelName() + "' loaded successfully!");
-            System.out.println("Initial coins: " + loadedData.getInitialCoins());
-            System.out.println("Number of systems: " + loadedData.getSystems().size());
-            GameState newGameState = GameBuilder.buildFrom(loadedData);
-
-            System.out.println("2. GameState built with " + newGameState.getSystems().size() + " systems.");
-            // ۲. وضعیت ساخته شده را در GameManager قرار بده
-            GameManager.getInstance().setCurrentGameState(newGameState);
-
-            // TODO: در قدم بعدی، این دیتا را به GameController پاس می‌دهیم تا بازی را بسازد
-
-            ScreenController.getInstance().activate(Screen.GAME);
-        } else {
+        if (loadedData == null) {
             System.err.println("Failed to load level " + levelNumber);
+            return;
         }
+
+        GameState currentGameState = GameManager.getInstance().getCurrentGameState();
+        GameState newGameState;
+
+        if (currentGameState != null && currentGameState.isProgressiveMode() &&
+                levelNumber == currentGameState.getLevelNumber() + 1) {
+
+            newGameState = ProgressiveGameBuilder.buildProgressiveLevel(loadedData, currentGameState);
+            System.out.println("Progressive level loaded: Level " + levelNumber);
+        } else {
+            newGameState = ProgressiveGameBuilder.buildProgressiveLevel(loadedData, null);
+            newGameState.enableProgressiveMode();
+            System.out.println("New game started from Level " + levelNumber);
+        }
+
+        GameManager.getInstance().setCurrentGameState(newGameState);
+        ScreenController.getInstance().activate(Screen.GAME);
     }
 
     @FXML

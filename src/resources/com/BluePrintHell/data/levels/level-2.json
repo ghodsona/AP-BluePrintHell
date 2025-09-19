@@ -1,78 +1,44 @@
 {
   "levelNumber": 2,
-  "levelName": "Packet Rush",
+  "levelName": "Intermediate Network",
   "initialWireLength": 2500.0,
-  "initialCoins": 10,
+  "initialCoins": 15,
   "systems": [
     {
-      "id": "ref_source_A",
+      "id": "source_system",
       "type": "REFERENCE",
       "x": 100,
-      "y": 150,
-      "inputPorts": [],
-      "outputPorts": [
-        { "id": "ref_A_out_sq", "shape": "SQUARE" }
-      ]
-    },
-    {
-      "id": "ref_source_B",
-      "type": "REFERENCE",
-      "x": 100,
-      "y": 450,
-      "inputPorts": [],
-      "outputPorts": [
-        { "id": "ref_B_out_tri", "shape": "TRIANGLE" },
-        { "id": "ref_B_out_circ", "shape": "CIRCLE" }
-      ]
-    },
-    {
-      "id": "sys_C_distributor",
-      "type": "NORMAL",
-      "x": 450,
       "y": 300,
-      "inputPorts": [
-        { "id": "sys_C_in_sq", "shape": "SQUARE" },
-        { "id": "sys_C_in_tri", "shape": "TRIANGLE" }
-      ],
-      "outputPorts": [
-        { "id": "sys_C_out_circ", "shape": "CIRCLE" }
-      ]
+      "inputPorts": [],
+      "outputPorts": [{"id": "source_out", "shape": "SQUARE"}]
     },
     {
-      "id": "sys_D_junction",
-      "type": "NORMAL",
+      "id": "destination_system",
+      "type": "REFERENCE",
       "x": 800,
       "y": 300,
-      "inputPorts": [
-        { "id": "sys_D_in_circ1", "shape": "CIRCLE" },
-        { "id": "sys_D_in_circ2", "shape": "CIRCLE" }
-      ],
-      "outputPorts": [
-        { "id": "sys_D_out_sq", "shape": "SQUARE" },
-        { "id": "sys_D_out_tri", "shape": "TRIANGLE" }
-      ]
+      "inputPorts": [{"id": "dest_in", "shape": "SQUARE"}],
+      "outputPorts": []
     },
     {
-      "id": "ref_E_destination",
-      "type": "REFERENCE",
-      "x": 1100,
-      "y": 300,
-      "inputPorts": [
-        { "id": "ref_E_in_sq", "shape": "SQUARE" },
-        { "id": "ref_E_in_tri", "shape": "TRIANGLE" }
-      ],
-      "outputPorts": []
+      "id": "relay_system_1",
+      "type": "NORMAL",
+      "x": 400,
+      "y": 200,
+      "inputPorts": [{"id": "relay1_in", "shape": "SQUARE"}],
+      "outputPorts": [{"id": "relay1_out", "shape": "SQUARE"}]
+    },
+    {
+      "id": "relay_system_2",
+      "type": "NORMAL",
+      "x": 400,
+      "y": 400,
+      "inputPorts": [{"id": "relay2_in", "shape": "SQUARE"}],
+      "outputPorts": [{"id": "relay2_out", "shape": "SQUARE"}]
     }
   ],
   "spawnEvents": [
-    { "spawnTime": 2.0, "sourceSystemId": "ref_source_A", "packetType": "SQUARE_MESSENGER" },
-    { "spawnTime": 2.5, "sourceSystemId": "ref_source_B", "packetType": "TRIANGLE_MESSENGER" },
-    { "spawnTime": 3.0, "sourceSystemId": "ref_source_A", "packetType": "SQUARE_MESSENGER" },
-    { "spawnTime": 3.5, "sourceSystemId": "ref_source_B", "packetType": "CIRCLE_MESSENGER" },
-    { "spawnTime": 4.0, "sourceSystemId": "ref_source_A", "packetType": "SQUARE_MESSENGER" },
-    { "spawnTime": 4.5, "sourceSystemId": "ref_source_B", "packetType": "TRIANGLE_MESSENGER" },
-    { "spawnTime": 5.0, "sourceSystemId": "ref_source_A", "packetType": "SQUARE_MESSENGER" },
-    { "spawnTime": 5.5, "sourceSystemId": "ref_source_B", "packetType": "CIRCLE_MESSENGER" },
-    { "spawnTime": 6.0, "sourceSystemId": "ref_source_A", "packetType": "SQUARE_MESSENGER" }
+    {"spawnTime": 2.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"},
+    {"spawnTime": 3.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"}
   ]
 }

@@ -1,456 +1,207 @@
 {
-  "levelNumber" : 1,
-  "playerWireLength" : 3000.0,
-  "playerCoins" : 15,
-  "gameTime" : 0.0,
-  "totalPacketsSpawned" : 0,
+  "levelNumber" : 2,
+  "playerWireLength" : 2000.0,
+  "playerCoins" : 18,
+  "packetLoss" : 0.0,
+  "gameTime" : 12.940072200000001,
+  "totalPacketsSpawned" : 3,
   "packetsLost" : 0,
+  "isProgressiveMode" : true,
   "systems" : [ {
     "type" : "ReferenceSystem",
     "@id" : 1,
-    "id" : "ref_A_Victim_Source",
+    "id" : "source_system",
     "position" : {
       "x" : 100.0,
-      "y" : 100.0
+      "y" : 300.0,
+      "hash" : 0
     },
     "inputPorts" : [ ],
     "outputPorts" : [ {
       "@id" : 2,
-      "id" : "ref_A_out_sq",
+      "id" : "source_out",
       "type" : "OUTPUT",
       "shape" : "SQUARE",
       "position" : {
         "x" : 214.0,
-        "y" : 134.0
+        "y" : 334.0,
+        "hash" : 0
       },
       "attachedConnection" : {
         "@id" : 3,
         "startPort" : 2,
         "endPort" : {
           "@id" : 4,
-          "id" : "sys_B_in_sq",
+          "id" : "relay1_in",
           "type" : "INPUT",
           "shape" : "SQUARE",
           "position" : {
-            "x" : 494.0,
-            "y" : 134.0
+            "x" : 259.59999999999997,
+            "y" : 230.0,
+            "hash" : 0
           },
-          "attachedConnection" : 3,
-          "connected" : true,
-          "centerPosition" : {
-            "x" : 500.0,
-            "y" : 140.0
-          }
+          "attachedConnection" : 3
         },
-        "bendPoints" : [ {
-          "x" : 309.6,
-          "y" : 102.4
-        }, {
-          "x" : 428.0,
-          "y" : 206.4
-        } ],
+        "bendPoints" : [ ],
         "pathPoints" : [ {
           "x" : 220.0,
-          "y" : 140.0
+          "y" : 340.0,
+          "hash" : 0
         }, {
-          "x" : 309.6,
-          "y" : 102.4
-        }, {
-          "x" : 428.0,
-          "y" : 206.4
-        }, {
-          "x" : 500.0,
-          "y" : 140.0
+          "x" : 265.59999999999997,
+          "y" : 236.0,
+          "hash" : 0
         } ]
-      },
-      "connected" : true,
-      "centerPosition" : {
-        "x" : 220.0,
-        "y" : 140.0
       }
     } ],
-    "parentGameState" : {
-      "levelNumber" : 1,
-      "playerWireLength" : 3000.0,
-      "playerCoins" : 15,
-      "gameTime" : 0.0,
-      "totalPacketsSpawned" : 0,
-      "packetsLost" : 0,
-      "systems" : [ 1, {
-        "type" : "NormalSystem",
-        "@id" : 5,
-        "id" : "sys_B_Victim_Path",
-        "position" : {
-          "x" : 500.0,
-          "y" : 100.0
-        },
-        "inputPorts" : [ 4 ],
-        "outputPorts" : [ {
-          "@id" : 6,
-          "id" : "sys_B_out_sq",
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ]
+  }, {
+    "type" : "ReferenceSystem",
+    "@id" : 5,
+    "id" : "destination_system",
+    "position" : {
+      "x" : 676.0,
+      "y" : 241.60000000000002,
+      "hash" : 0
+    },
+    "inputPorts" : [ {
+      "@id" : 6,
+      "id" : "dest_in",
+      "type" : "INPUT",
+      "shape" : "SQUARE",
+      "position" : {
+        "x" : 670.0,
+        "y" : 275.6,
+        "hash" : 0
+      },
+      "attachedConnection" : {
+        "@id" : 7,
+        "startPort" : {
+          "@id" : 8,
+          "id" : "relay2_out",
           "type" : "OUTPUT",
           "shape" : "SQUARE",
           "position" : {
-            "x" : 614.0,
-            "y" : 134.0
+            "x" : 551.5999999999999,
+            "y" : 397.99999999999994,
+            "hash" : 0
           },
-          "attachedConnection" : {
-            "@id" : 7,
-            "startPort" : 6,
-            "endPort" : {
-              "@id" : 8,
-              "id" : "ref_E_in_sq",
-              "type" : "INPUT",
-              "shape" : "SQUARE",
-              "position" : {
-                "x" : 894.0,
-                "y" : 245.66666666666666
-              },
-              "attachedConnection" : 7,
-              "connected" : true,
-              "centerPosition" : {
-                "x" : 900.0,
-                "y" : 251.66666666666666
-              }
-            },
-            "bendPoints" : [ ],
-            "pathPoints" : [ {
-              "x" : 620.0,
-              "y" : 140.0
-            }, {
-              "x" : 900.0,
-              "y" : 251.66666666666666
-            } ]
-          },
-          "connected" : true,
-          "centerPosition" : {
-            "x" : 620.0,
-            "y" : 140.0
-          }
-        } ],
-        "parentGameState" : {
-          "levelNumber" : 1,
-          "playerWireLength" : 3000.0,
-          "playerCoins" : 15,
-          "gameTime" : 0.0,
-          "totalPacketsSpawned" : 0,
-          "packetsLost" : 0,
-          "systems" : [ 1, 5, {
-            "type" : "ReferenceSystem",
-            "@id" : 9,
-            "id" : "ref_C_Attacker_Source",
-            "position" : {
-              "x" : 100.0,
-              "y" : 500.0
-            },
-            "inputPorts" : [ ],
-            "outputPorts" : [ {
-              "@id" : 10,
-              "id" : "ref_C_out_tri",
-              "type" : "OUTPUT",
-              "shape" : "TRIANGLE",
-              "position" : {
-                "x" : 214.0,
-                "y" : 534.0
-              },
-              "attachedConnection" : {
-                "@id" : 11,
-                "startPort" : 10,
-                "endPort" : {
-                  "@id" : 12,
-                  "id" : "sys_D_in_tri",
-                  "type" : "INPUT",
-                  "shape" : "TRIANGLE",
-                  "position" : {
-                    "x" : 494.0,
-                    "y" : 384.0
-                  },
-                  "attachedConnection" : 11,
-                  "connected" : true,
-                  "centerPosition" : {
-                    "x" : 500.0,
-                    "y" : 390.0
-                  }
-                },
-                "bendPoints" : [ {
-                  "x" : 315.2,
-                  "y" : 583.2
-                }, {
-                  "x" : 339.2,
-                  "y" : 397.6
-                }, {
-                  "x" : 467.2,
-                  "y" : 502.4
-                } ],
-                "pathPoints" : [ {
-                  "x" : 220.0,
-                  "y" : 540.0
-                }, {
-                  "x" : 315.2,
-                  "y" : 583.2
-                }, {
-                  "x" : 339.2,
-                  "y" : 397.6
-                }, {
-                  "x" : 467.2,
-                  "y" : 502.4
-                }, {
-                  "x" : 500.0,
-                  "y" : 390.0
-                } ]
-              },
-              "connected" : true,
-              "centerPosition" : {
-                "x" : 220.0,
-                "y" : 540.0
-              }
-            } ],
-            "parentGameState" : {
-              "levelNumber" : 1,
-              "playerWireLength" : 3000.0,
-              "playerCoins" : 15,
-              "gameTime" : 0.0,
-              "totalPacketsSpawned" : 0,
-              "packetsLost" : 0,
-              "systems" : [ 1, 5, 9, {
-                "type" : "NormalSystem",
-                "@id" : 13,
-                "id" : "sys_D_Collision_Point",
-                "position" : {
-                  "x" : 500.0,
-                  "y" : 350.0
-                },
-                "inputPorts" : [ 12 ],
-                "outputPorts" : [ {
-                  "@id" : 14,
-                  "id" : "sys_D_out_circ",
-                  "type" : "OUTPUT",
-                  "shape" : "CIRCLE",
-                  "position" : {
-                    "x" : 614.0,
-                    "y" : 384.0
-                  },
-                  "attachedConnection" : {
-                    "@id" : 15,
-                    "startPort" : 14,
-                    "endPort" : {
-                      "@id" : 16,
-                      "id" : "ref_E_in_circ",
-                      "type" : "INPUT",
-                      "shape" : "CIRCLE",
-                      "position" : {
-                        "x" : 894.0,
-                        "y" : 272.3333333333333
-                      },
-                      "attachedConnection" : 15,
-                      "connected" : true,
-                      "centerPosition" : {
-                        "x" : 900.0,
-                        "y" : 278.3333333333333
-                      }
-                    },
-                    "bendPoints" : [ ],
-                    "pathPoints" : [ {
-                      "x" : 620.0,
-                      "y" : 390.0
-                    }, {
-                      "x" : 900.0,
-                      "y" : 278.3333333333333
-                    } ]
-                  },
-                  "connected" : true,
-                  "centerPosition" : {
-                    "x" : 620.0,
-                    "y" : 390.0
-                  }
-                } ],
-                "parentGameState" : {
-                  "levelNumber" : 1,
-                  "playerWireLength" : 3000.0,
-                  "playerCoins" : 15,
-                  "gameTime" : 0.0,
-                  "totalPacketsSpawned" : 0,
-                  "packetsLost" : 0,
-                  "systems" : [ 1, 5, 9, 13, {
-                    "type" : "ReferenceSystem",
-                    "@id" : 17,
-                    "id" : "ref_E_Destination",
-                    "position" : {
-                      "x" : 900.0,
-                      "y" : 225.0
-                    },
-                    "inputPorts" : [ 8, 16 ],
-                    "outputPorts" : [ ],
-                    "parentGameState" : {
-                      "levelNumber" : 1,
-                      "playerWireLength" : 3000.0,
-                      "playerCoins" : 15,
-                      "gameTime" : 0.0,
-                      "totalPacketsSpawned" : 0,
-                      "packetsLost" : 0,
-                      "systems" : [ 1, 5, 9, 13, 17 ],
-                      "packets" : [ ],
-                      "connections" : [ 3, 11, 15, 7 ],
-                      "spawnEvents" : [ {
-                        "spawnTime" : 1.0,
-                        "sourceSystemId" : "ref_A_Victim_Source",
-                        "packetType" : "SQUARE_MESSENGER"
-                      }, {
-                        "spawnTime" : 1.5,
-                        "sourceSystemId" : "ref_A_Victim_Source",
-                        "packetType" : "SQUARE_MESSENGER"
-                      }, {
-                        "spawnTime" : 3.0,
-                        "sourceSystemId" : "ref_C_Attacker_Source",
-                        "packetType" : "TRIANGLE_MESSENGER"
-                      }, {
-                        "spawnTime" : 3.1,
-                        "sourceSystemId" : "ref_C_Attacker_Source",
-                        "packetType" : "TRIANGLE_MESSENGER"
-                      }, {
-                        "spawnTime" : 3.2,
-                        "sourceSystemId" : "ref_C_Attacker_Source",
-                        "packetType" : "TRIANGLE_MESSENGER"
-                      } ],
-                      "packetsSucceeded" : 0
-                    },
-                    "fullyConnected" : true,
-                    "bufferEmpty" : true
-                  } ],
-                  "packets" : [ ],
-                  "connections" : [ 3, 11, 15, 7 ],
-                  "spawnEvents" : [ {
-                    "spawnTime" : 1.0,
-                    "sourceSystemId" : "ref_A_Victim_Source",
-                    "packetType" : "SQUARE_MESSENGER"
-                  }, {
-                    "spawnTime" : 1.5,
-                    "sourceSystemId" : "ref_A_Victim_Source",
-                    "packetType" : "SQUARE_MESSENGER"
-                  }, {
-                    "spawnTime" : 3.0,
-                    "sourceSystemId" : "ref_C_Attacker_Source",
-                    "packetType" : "TRIANGLE_MESSENGER"
-                  }, {
-                    "spawnTime" : 3.1,
-                    "sourceSystemId" : "ref_C_Attacker_Source",
-                    "packetType" : "TRIANGLE_MESSENGER"
-                  }, {
-                    "spawnTime" : 3.2,
-                    "sourceSystemId" : "ref_C_Attacker_Source",
-                    "packetType" : "TRIANGLE_MESSENGER"
-                  } ],
-                  "packetsSucceeded" : 0
-                },
-                "fullyConnected" : true,
-                "bufferEmpty" : true
-              }, 17 ],
-              "packets" : [ ],
-              "connections" : [ 3, 11, 15, 7 ],
-              "spawnEvents" : [ {
-                "spawnTime" : 1.0,
-                "sourceSystemId" : "ref_A_Victim_Source",
-                "packetType" : "SQUARE_MESSENGER"
-              }, {
-                "spawnTime" : 1.5,
-                "sourceSystemId" : "ref_A_Victim_Source",
-                "packetType" : "SQUARE_MESSENGER"
-              }, {
-                "spawnTime" : 3.0,
-                "sourceSystemId" : "ref_C_Attacker_Source",
-                "packetType" : "TRIANGLE_MESSENGER"
-              }, {
-                "spawnTime" : 3.1,
-                "sourceSystemId" : "ref_C_Attacker_Source",
-                "packetType" : "TRIANGLE_MESSENGER"
-              }, {
-                "spawnTime" : 3.2,
-                "sourceSystemId" : "ref_C_Attacker_Source",
-                "packetType" : "TRIANGLE_MESSENGER"
-              } ],
-              "packetsSucceeded" : 0
-            },
-            "fullyConnected" : true,
-            "bufferEmpty" : true
-          }, 13, 17 ],
-          "packets" : [ ],
-          "connections" : [ 3, 11, 15, 7 ],
-          "spawnEvents" : [ {
-            "spawnTime" : 1.0,
-            "sourceSystemId" : "ref_A_Victim_Source",
-            "packetType" : "SQUARE_MESSENGER"
-          }, {
-            "spawnTime" : 1.5,
-            "sourceSystemId" : "ref_A_Victim_Source",
-            "packetType" : "SQUARE_MESSENGER"
-          }, {
-            "spawnTime" : 3.0,
-            "sourceSystemId" : "ref_C_Attacker_Source",
-            "packetType" : "TRIANGLE_MESSENGER"
-          }, {
-            "spawnTime" : 3.1,
-            "sourceSystemId" : "ref_C_Attacker_Source",
-            "packetType" : "TRIANGLE_MESSENGER"
-          }, {
-            "spawnTime" : 3.2,
-            "sourceSystemId" : "ref_C_Attacker_Source",
-            "packetType" : "TRIANGLE_MESSENGER"
-          } ],
-          "packetsSucceeded" : 0
+          "attachedConnection" : 7
         },
-        "fullyConnected" : true,
-        "bufferEmpty" : true
-      }, 9, 13, 17 ],
-      "packets" : [ ],
-      "connections" : [ 3, 11, 15, 7 ],
-      "spawnEvents" : [ {
-        "spawnTime" : 1.0,
-        "sourceSystemId" : "ref_A_Victim_Source",
-        "packetType" : "SQUARE_MESSENGER"
-      }, {
-        "spawnTime" : 1.5,
-        "sourceSystemId" : "ref_A_Victim_Source",
-        "packetType" : "SQUARE_MESSENGER"
-      }, {
-        "spawnTime" : 3.0,
-        "sourceSystemId" : "ref_C_Attacker_Source",
-        "packetType" : "TRIANGLE_MESSENGER"
-      }, {
-        "spawnTime" : 3.1,
-        "sourceSystemId" : "ref_C_Attacker_Source",
-        "packetType" : "TRIANGLE_MESSENGER"
-      }, {
-        "spawnTime" : 3.2,
-        "sourceSystemId" : "ref_C_Attacker_Source",
-        "packetType" : "TRIANGLE_MESSENGER"
-      } ],
-      "packetsSucceeded" : 0
+        "endPort" : 6,
+        "bendPoints" : [ ],
+        "pathPoints" : [ {
+          "x" : 557.5999999999999,
+          "y" : 403.99999999999994,
+          "hash" : 0
+        }, {
+          "x" : 676.0,
+          "y" : 281.6,
+          "hash" : 0
+        } ]
+      }
+    } ],
+    "outputPorts" : [ ],
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ]
+  }, {
+    "type" : "NormalSystem",
+    "@id" : 9,
+    "id" : "relay_system_1",
+    "position" : {
+      "x" : 265.59999999999997,
+      "y" : 196.0,
+      "hash" : 0
     },
-    "fullyConnected" : true,
-    "bufferEmpty" : true
-  }, 5, 9, 13, 17 ],
-  "packets" : [ ],
-  "connections" : [ 3, 11, 15, 7 ],
-  "spawnEvents" : [ {
-    "spawnTime" : 1.0,
-    "sourceSystemId" : "ref_A_Victim_Source",
-    "packetType" : "SQUARE_MESSENGER"
+    "inputPorts" : [ 4 ],
+    "outputPorts" : [ {
+      "@id" : 10,
+      "id" : "relay1_out",
+      "type" : "OUTPUT",
+      "shape" : "SQUARE",
+      "position" : {
+        "x" : 379.59999999999997,
+        "y" : 230.0,
+        "hash" : 0
+      },
+      "attachedConnection" : {
+        "@id" : 11,
+        "startPort" : 10,
+        "endPort" : {
+          "@id" : 12,
+          "id" : "relay2_in",
+          "type" : "INPUT",
+          "shape" : "SQUARE",
+          "position" : {
+            "x" : 431.59999999999997,
+            "y" : 397.99999999999994,
+            "hash" : 0
+          },
+          "attachedConnection" : 11
+        },
+        "bendPoints" : [ ],
+        "pathPoints" : [ {
+          "x" : 385.59999999999997,
+          "y" : 236.0,
+          "hash" : 0
+        }, {
+          "x" : 437.59999999999997,
+          "y" : 403.99999999999994,
+          "hash" : 0
+        } ]
+      }
+    } ],
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ]
   }, {
-    "spawnTime" : 1.5,
-    "sourceSystemId" : "ref_A_Victim_Source",
-    "packetType" : "SQUARE_MESSENGER"
-  }, {
-    "spawnTime" : 3.0,
-    "sourceSystemId" : "ref_C_Attacker_Source",
-    "packetType" : "TRIANGLE_MESSENGER"
-  }, {
-    "spawnTime" : 3.1,
-    "sourceSystemId" : "ref_C_Attacker_Source",
-    "packetType" : "TRIANGLE_MESSENGER"
-  }, {
-    "spawnTime" : 3.2,
-    "sourceSystemId" : "ref_C_Attacker_Source",
-    "packetType" : "TRIANGLE_MESSENGER"
+    "type" : "NormalSystem",
+    "@id" : 13,
+    "id" : "relay_system_2",
+    "position" : {
+      "x" : 437.59999999999997,
+      "y" : 363.99999999999994,
+      "hash" : 0
+    },
+    "inputPorts" : [ 12 ],
+    "outputPorts" : [ 8 ],
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ]
   } ],
-  "packetsSucceeded" : 0
+  "packets" : [ {
+    "packetType" : "SquarePacket",
+    "@id" : 14,
+    "position" : {
+      "x" : 612.0722809692205,
+      "y" : 347.6874392683056,
+      "hash" : 0
+    },
+    "currentConnection" : 7,
+    "destinationPort" : 6,
+    "currentSpeed" : 50.0,
+    "noise" : 0.0,
+    "size" : 2,
+    "path" : [ {
+      "x" : 557.5999999999999,
+      "y" : 403.99999999999994,
+      "hash" : 0
+    }, {
+      "x" : 676.0,
+      "y" : 281.6,
+      "hash" : 0
+    } ],
+    "currentPathIndex" : 0,
+    "coinValue" : 2,
+    "visualPosition" : {
+      "x" : 612.0722809692205,
+      "y" : 347.6874392683056,
+      "hash" : 0
+    }
+  } ],
+  "packetsToRemove" : [ ],
+  "connections" : [ 3, 11, 7 ],
+  "spawnEvents" : [ ],
+  "packetsSucceeded" : 2,
+  "destinationSystem" : 5,
+  "sourceSystem" : 1
 }
