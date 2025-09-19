@@ -11,6 +11,8 @@ import javafx.geometry.Point2D;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.BluePrintHell.model.packets.TrojanPacket;
+import com.BluePrintHell.model.packets.ProtectedPacket;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -20,9 +22,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = SquarePacket.class, name = "SquarePacket"),
         @JsonSubTypes.Type(value = TrianglePacket.class, name = "TrianglePacket"),
-        @JsonSubTypes.Type(value = CirclePacket.class, name = "CirclePacket")
+        @JsonSubTypes.Type(value = CirclePacket.class, name = "CirclePacket"),
+        @JsonSubTypes.Type(value = TrojanPacket.class, name = "TrojanPacket"), // <-- این خط اضافه شود
+        @JsonSubTypes.Type(value = ProtectedPacket.class, name = "ProtectedPacket"), // <-- این خط اضافه شود
+        @JsonSubTypes.Type(value = LargePacketTypeA.class, name = "LargePacketTypeA"),
+        @JsonSubTypes.Type(value = LargePacketTypeB.class, name = "LargePacketTypeB"),
+        @JsonSubTypes.Type(value = BitPacket.class, name = "BitPacket")
 })
-
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public abstract class Packet {
     protected Point2D position;

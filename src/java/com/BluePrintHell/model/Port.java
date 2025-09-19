@@ -40,6 +40,9 @@ public class Port {
     public Point2D getPosition() { return position; }
     public void setPosition(Point2D position) { this.position = position; }
     public Connection getAttachedConnection() { return attachedConnection; }
+    public void setShape(PortShape shape) {
+        this.shape = shape;
+    }
 
     @JsonIgnore
     public Point2D getCenterPosition() {

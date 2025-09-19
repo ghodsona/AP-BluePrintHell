@@ -2,26 +2,27 @@
   "levelNumber": 1,
   "levelName": "Basic Network",
   "initialWireLength": 2000.0,
-  "initialCoins": 10,
+  "initialCoins": 15,
   "systems": [
     {
       "id": "source_system",
       "type": "REFERENCE",
       "x": 100,
-      "y": 300,
+      "y": 400,
       "inputPorts": [],
-      "outputPorts": [{"id": "source_out", "shape": "SQUARE"}]
+      "outputPorts": [{"id": "source_out_1", "shape": "SQUARE"}]
     },
     {
       "id": "destination_system",
       "type": "REFERENCE",
-      "x": 800,
-      "y": 300,
-      "inputPorts": [{"id": "dest_in", "shape": "SQUARE"}],
+      "x": 1100,
+      "y": 400,
+      "inputPorts": [{"id": "dest_in_1", "shape": "SQUARE"}],
       "outputPorts": []
     }
   ],
   "spawnEvents": [
-    {"spawnTime": 2.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"}
+    {"spawnTime": 2.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"},
+    {"spawnTime": 4.0, "sourceSystemId": "source_system", "packetType": "TRIANGLE_MESSENGER"}
   ]
 }

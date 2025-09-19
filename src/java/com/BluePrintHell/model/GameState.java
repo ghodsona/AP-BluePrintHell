@@ -2,12 +2,16 @@ package com.BluePrintHell.model;
 
 import com.BluePrintHell.model.leveldata.SpawnEventData;
 import com.BluePrintHell.model.network.NetworkSystem;
+import com.BluePrintHell.model.packets.LargePacket;
 import com.BluePrintHell.model.packets.Packet;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.UUID; // <-- ایمپورت جدید
+import java.util.Map;   // <-- ایمپورت جدید
+import java.util.HashMap;
 
 public class GameState {
     private int levelNumber;
@@ -26,6 +30,7 @@ public class GameState {
     private List<SpawnEventData> spawnEvents = new ArrayList<>();
     private int packetsSucceeded = 0;
     private final List<ActivePowerUp> activePowerUps = new CopyOnWriteArrayList<>();
+    private final Map<UUID, LargePacketInfo> largePacketRegistry = new HashMap<>();
 
     public GameState() {
     }
@@ -199,4 +204,14 @@ public class GameState {
     public void setLevelNumber(int levelNumber) { this.levelNumber = levelNumber; }
     public void setPlayerWireLength(double playerWireLength) { this.playerWireLength = playerWireLength; }
     public void setProgressiveMode(boolean progressiveMode) { this.isProgressiveMode = progressiveMode; }
+
+    public void registerLargePacket(LargePacket largePacket) {
+        if (largePacket == null) return;
+        LargePacketInfo info = new LargePacketInfo(largePacket.getClass(), largePacket.getSize());
+        largePacketRegistry.put(largePacket.getId(), info);
+    }
+
+    public LargePacketInfo getLargePacketInfo(UUID id) {
+        return largePacketRegistry.get(id);
+    }
 }

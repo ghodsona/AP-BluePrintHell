@@ -4,9 +4,7 @@ import com.BluePrintHell.model.*;
 import com.BluePrintHell.model.leveldata.LevelData;
 import com.BluePrintHell.model.leveldata.PortData;
 import com.BluePrintHell.model.leveldata.SystemData;
-import com.BluePrintHell.model.network.NetworkSystem;
-import com.BluePrintHell.model.network.NormalSystem;
-import com.BluePrintHell.model.network.ReferenceSystem;
+import com.BluePrintHell.model.network.*;
 import javafx.geometry.Point2D;
 
 import java.util.ArrayList;
@@ -59,6 +57,18 @@ public class ProgressiveGameBuilder {
                 return new ReferenceSystem(id, position);
             case "NORMAL":
                 return new NormalSystem(id, position);
+            case "DISTRIBUTESYSTEM":
+                return new DistributeSystem(id, position);
+            case "MERGESYSTEM":
+                return new MergeSystem(id, position);
+            case "SABOTEURSYSTEM":
+                return new SaboteurSystem(id, position);
+            case "VPNSYSTEM":
+                return new VPNSystem(id, position);
+            case "SPYSYSTEM":
+                return new SpySystem(id, position);
+            case "ANTITROJANSYSTEM":
+                return new AntiTrojanSystem(id, position);
             default:
                 throw new IllegalArgumentException("Unknown system type: " + type);
         }

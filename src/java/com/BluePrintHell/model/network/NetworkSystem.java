@@ -17,9 +17,14 @@ import java.util.Queue;
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = NormalSystem.class, name = "NormalSystem"),
-        @JsonSubTypes.Type(value = ReferenceSystem.class, name = "ReferenceSystem")
+        @JsonSubTypes.Type(value = ReferenceSystem.class, name = "ReferenceSystem"),
+        @JsonSubTypes.Type(value = SaboteurSystem.class, name = "SaboteurSystem"),
+        @JsonSubTypes.Type(value = VPNSystem.class, name = "VPNSystem"),
+        @JsonSubTypes.Type(value = SpySystem.class, name = "SpySystem"),
+        @JsonSubTypes.Type(value = AntiTrojanSystem.class, name = "AntiTrojanSystem"),
+        @JsonSubTypes.Type(value = DistributeSystem.class, name = "DistributeSystem"),
+        @JsonSubTypes.Type(value = MergeSystem.class, name = "MergeSystem")
 })
-
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
 public abstract class NetworkSystem {
     protected final String id;

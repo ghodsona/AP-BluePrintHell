@@ -1,29 +1,13 @@
 {
   "levelNumber": 2,
-  "levelName": "Intermediate Network",
-  "initialWireLength": 2500.0,
-  "initialCoins": 15,
+  "levelName": "Adding Relays",
+  "initialWireLength": 1500.0,
+  "initialCoins": 10,
   "systems": [
-    {
-      "id": "source_system",
-      "type": "REFERENCE",
-      "x": 100,
-      "y": 300,
-      "inputPorts": [],
-      "outputPorts": [{"id": "source_out", "shape": "SQUARE"}]
-    },
-    {
-      "id": "destination_system",
-      "type": "REFERENCE",
-      "x": 800,
-      "y": 300,
-      "inputPorts": [{"id": "dest_in", "shape": "SQUARE"}],
-      "outputPorts": []
-    },
     {
       "id": "relay_system_1",
       "type": "NORMAL",
-      "x": 400,
+      "x": 600,
       "y": 200,
       "inputPorts": [{"id": "relay1_in", "shape": "SQUARE"}],
       "outputPorts": [{"id": "relay1_out", "shape": "SQUARE"}]
@@ -31,14 +15,14 @@
     {
       "id": "relay_system_2",
       "type": "NORMAL",
-      "x": 400,
-      "y": 400,
-      "inputPorts": [{"id": "relay2_in", "shape": "SQUARE"}],
-      "outputPorts": [{"id": "relay2_out", "shape": "SQUARE"}]
+      "x": 600,
+      "y": 600,
+      "inputPorts": [{"id": "relay2_in", "shape": "TRIANGLE"}],
+      "outputPorts": [{"id": "relay2_out", "shape": "TRIANGLE"}]
     }
   ],
   "spawnEvents": [
-    {"spawnTime": 2.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"},
-    {"spawnTime": 3.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"}
+    {"spawnTime": 6.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"},
+    {"spawnTime": 8.0, "sourceSystemId": "source_system", "packetType": "TRIANGLE_MESSENGER"}
   ]
 }
