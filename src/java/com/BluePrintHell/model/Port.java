@@ -25,7 +25,9 @@ public class Port {
 
     private Port() { }
 
+    @JsonIgnore
     public boolean isConnected() { return attachedConnection != null; }
+
     public void connect(Connection connection) { this.attachedConnection = connection; }
     public void disconnect() { this.attachedConnection = null; }
 
@@ -38,6 +40,8 @@ public class Port {
     public Point2D getPosition() { return position; }
     public void setPosition(Point2D position) { this.position = position; }
     public Connection getAttachedConnection() { return attachedConnection; }
+
+    @JsonIgnore
     public Point2D getCenterPosition() {
         if (position == null) return Point2D.ZERO;
         return new Point2D(position.getX() + PORT_SIZE / 2, position.getY() + PORT_SIZE / 2);

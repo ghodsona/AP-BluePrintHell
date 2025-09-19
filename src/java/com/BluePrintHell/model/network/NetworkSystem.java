@@ -3,10 +3,7 @@ package com.BluePrintHell.model.network;
 import com.BluePrintHell.model.GameState;
 import com.BluePrintHell.model.packets.Packet;
 import com.BluePrintHell.model.Port;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import javafx.geometry.Point2D;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -30,7 +27,6 @@ public abstract class NetworkSystem {
     protected List<Port> inputPorts = new ArrayList<>();
     protected List<Port> outputPorts = new ArrayList<>();
 
-    // Use a capacity constant
     protected static final int BUFFER_CAPACITY = 5;
     protected Queue<Packet> packetBuffer = new LinkedList<>();
 
@@ -42,11 +38,11 @@ public abstract class NetworkSystem {
         this.position = position;
     }
 
+    @JsonIgnore
     public boolean isBufferEmpty() {
         return packetBuffer.isEmpty();
     }
 
-    // Update the receivePacket method to check capacity
     public void receivePacket(Packet packet) {
         if (packetBuffer.size() < BUFFER_CAPACITY) {
             packetBuffer.add(packet);
@@ -67,6 +63,7 @@ public abstract class NetworkSystem {
         this.parentGameState = parentGameState;
     }
 
+    @JsonIgnore
     public GameState getParentGameState() {
         return parentGameState;
     }
@@ -78,15 +75,15 @@ public abstract class NetworkSystem {
     protected boolean wasJustArrived(Packet packet) {
         return justArrivedPackets.contains(packet);
     }
-    // --- Getters ---
+
     public String getId() { return id; }
     public Point2D getPosition() { return position; }
     public void setPosition(Point2D position) { this.position = position; }
     public List<Port> getInputPorts() { return inputPorts; }
     public List<Port> getOutputPorts() { return outputPorts; }
-    public boolean isFullyConnected() {
-        // تمام پورت‌های ورودی را چک کن
-        for (Port port : inputPorts) {
+
+    @JsonIgnore
+    public boolean isFullyConnected() {for (Port port : inputPorts) {
             if (!port.isConnected()) {
                 return false;
             }

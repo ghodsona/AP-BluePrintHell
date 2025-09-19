@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.File;
 import java.io.IOException;
+import javafx.geometry.Point2D;
+
 
 public class SaveManager {
 
@@ -13,6 +15,7 @@ public class SaveManager {
 
     static {
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.addMixIn(Point2D.class, Point2DMixin.class);
     }
 
     public static void saveGame(GameState gameState) {

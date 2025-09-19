@@ -26,25 +26,17 @@ public class ReferenceSystem extends NetworkSystem {
         }
     }
 
-    /**
-     * Finds a suitable output port for a given packet based on game rules.
-     * Rule: Priority 1: Compatible & Free. Priority 2: Any Free port.
-     * @param packet The packet to be routed.
-     * @return A suitable Port, or null if none is available.
-     */
     private Port findOutputPortFor(Packet packet) {
         GameState gs = getParentGameState();
         if (gs == null) return null;
 
-        // Priority 1: Find a connected, free, and COMPATIBLE port
         for (Port port : outputPorts) {
             if (port.isConnected() && gs.isConnectionFree(port.getAttachedConnection()) &&
                     packet.isCompatibleWith(port.getShape())) {
-                return port; // Found the best possible port
+                return port;
             }
         }
 
-        // Priority 2: If no compatible port was found, find ANY connected, FREE port
         for (Port port : outputPorts) {
             if (port.isConnected() && gs.isConnectionFree(port.getAttachedConnection())) {
                 return port; // Found a fallback port
