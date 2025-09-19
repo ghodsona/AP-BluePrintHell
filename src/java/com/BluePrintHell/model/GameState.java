@@ -6,6 +6,8 @@ import com.BluePrintHell.model.packets.Packet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameState {
     private int levelNumber;
@@ -23,6 +25,7 @@ public class GameState {
     private List<Connection> connections = new ArrayList<>();
     private List<SpawnEventData> spawnEvents = new ArrayList<>();
     private int packetsSucceeded = 0;
+    private final List<ActivePowerUp> activePowerUps = new CopyOnWriteArrayList<>();
 
     public GameState() {
     }
@@ -80,14 +83,32 @@ public class GameState {
         this.packetsLost++;
     }
 
+
     public void update(double deltaTime) {
         this.gameTime += deltaTime;
+
+        for (ActivePowerUp powerUp : activePowerUps) {
+            powerUp.update(deltaTime);
+            if (powerUp.isFinished()) {
+                activePowerUps.remove(powerUp);
+            }
+        }
+
         for (int i = packets.size() - 1; i >= 0; i--) {
             packets.get(i).update(deltaTime);
         }
         for (NetworkSystem system : systems) {
             system.update(deltaTime);
         }
+    }
+
+    public void addPowerUp(ActivePowerUp powerUp) {
+        activePowerUps.removeIf(p -> p.getType() == powerUp.getType());
+        activePowerUps.add(powerUp);
+    }
+
+    public boolean hasPowerUp(PowerUpType type) {
+        return activePowerUps.stream().anyMatch(p -> p.getType() == type && !p.isFinished());
     }
 
     public boolean allSystemBuffersAreEmpty() {

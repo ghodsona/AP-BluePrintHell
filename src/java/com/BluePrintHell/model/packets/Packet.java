@@ -128,4 +128,5 @@ public abstract class Packet {
     }
     public int getSize() { return this.size; }
     public void addNoise(double amount) { this.noise += amount; }
+    public double getNoise() { return this.noise; }
 }

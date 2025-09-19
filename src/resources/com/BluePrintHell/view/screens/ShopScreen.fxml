@@ -6,7 +6,6 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.Priority?>
 
 <BorderPane styleClass="root-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.BluePrintHell.controller.ShopController">
@@ -19,7 +18,7 @@
     </top>
 
     <center>
-        <VBox alignment="TOP_CENTER" spacing="15.0" maxWidth="600">
+        <VBox fx:id="itemContainer" alignment="TOP_CENTER" spacing="15.0" maxWidth="800">
             <padding>
                 <Insets top="30.0"/>
             </padding>
@@ -27,8 +26,9 @@
                 <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="shop-item">
                     <children>
                         <Label text="O' Atar: Disable Impact Waves (10s)" styleClass="item-label"/>
-                        <HBox HBox.hgrow="ALWAYS"/> <Label text="Cost: 3 Coins" styleClass="cost-label"/>
-                        <Button text="Buy"/>
+                        <HBox HBox.hgrow="ALWAYS"/>
+                        <Label text="Cost: 3 Coins" styleClass="cost-label"/>
+                        <Button fx:id="buyOAtarButton" text="Buy" onAction="#onBuyOAtar"/>
                     </children>
                 </HBox>
                 <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="shop-item">
@@ -36,7 +36,39 @@
                         <Label text="O' Airyaman: Disable Collisions (5s)" styleClass="item-label"/>
                         <HBox HBox.hgrow="ALWAYS"/>
                         <Label text="Cost: 4 Coins" styleClass="cost-label"/>
-                        <Button text="Buy"/>
+                        <Button fx:id="buyOAiryamanButton" text="Buy" onAction="#onBuyOAiryaman"/>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="shop-item">
+                    <children>
+                        <Label text="O' Anahita: Zero Out All Packet Noise" styleClass="item-label"/>
+                        <HBox HBox.hgrow="ALWAYS"/>
+                        <Label text="Cost: 5 Coins" styleClass="cost-label"/>
+                        <Button fx:id="buyOAnahitaButton" text="Buy" onAction="#onBuyOAnahita"/>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="shop-item">
+                    <children>
+                        <Label text="Scroll of Aergia: Zero Packet Acceleration (20s)" styleClass="item-label-disabled"/>
+                        <HBox HBox.hgrow="ALWAYS"/>
+                        <Label text="Cost: 10 Coins" styleClass="cost-label"/>
+                        <Button text="Buy" disable="true"/>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="shop-item">
+                    <children>
+                        <Label text="Scroll of Sisyphus: Relocate a System" styleClass="item-label-disabled"/>
+                        <HBox HBox.hgrow="ALWAYS"/>
+                        <Label text="Cost: 15 Coins" styleClass="cost-label"/>
+                        <Button text="Buy" disable="true"/>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="shop-item">
+                    <children>
+                        <Label text="Scroll of Eliphas: Re-center Packets (30s)" styleClass="item-label-disabled"/>
+                        <HBox HBox.hgrow="ALWAYS"/>
+                        <Label text="Cost: 20 Coins" styleClass="cost-label"/>
+                        <Button text="Buy" disable="true"/>
                     </children>
                 </HBox>
             </children>

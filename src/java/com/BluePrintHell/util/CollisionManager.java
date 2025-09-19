@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.BluePrintHell.GameManager;
+import com.BluePrintHell.model.GameState;
+import com.BluePrintHell.model.PowerUpType;
 
 public class CollisionManager {
     private final Map<String, List<Packet>> grid;
@@ -17,10 +20,12 @@ public class CollisionManager {
     }
 
     public void checkCollisions(List<Packet> allPackets) {
-        // Broad Phase: Populate the grid
-        populateGrid(allPackets);
+        GameState gameState = GameManager.getInstance().getCurrentGameState();
+        if (gameState == null || gameState.hasPowerUp(PowerUpType.O_AIRYAMAN)) {
+            return;
+        }
 
-        // Narrow Phase: Check for collisions only within cells
+        populateGrid(allPackets);
         for (List<Packet> cellPackets : grid.values()) {
             if (cellPackets.size() < 2) {
                 continue; // No collision possible with less than 2 packets
@@ -59,11 +64,17 @@ public class CollisionManager {
 
     private void resolveCollision(Packet p1, Packet p2, List<Packet> allPackets) {
         System.out.println("Collision detected between two packets!");
-        // TODO: Add noise to p1 and p2
+
+        GameState gameState = GameManager.getInstance().getCurrentGameState();
+        if (gameState == null) return;
+
         p1.addNoise(1);
         p2.addNoise(1);
 
-        // --- Impact Wave Logic ---
+        if (gameState.hasPowerUp(PowerUpType.O_ATAR)) {
+            return;
+        }
+
         Point2D collisionPoint = p1.getPosition().midpoint(p2.getPosition());
         double impactRadius = 150; // Max radius of the impact wave
         double impactForce = 50;   // Max force of the impact
