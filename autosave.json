@@ -1,9 +1,9 @@
 {
-  "levelNumber" : 2,
+  "levelNumber" : 3,
   "playerWireLength" : 2000.0,
-  "playerCoins" : 22,
+  "playerCoins" : 25,
   "packetLoss" : 0.0,
-  "gameTime" : 13.764048599999992,
+  "gameTime" : 0.0,
   "totalPacketsSpawned" : 4,
   "packetsLost" : 0,
   "isProgressiveMode" : true,
@@ -32,12 +32,12 @@
         "startPort" : 2,
         "endPort" : {
           "@id" : 4,
-          "id" : "relay1_in",
+          "id" : "dist_in",
           "type" : "INPUT",
-          "shape" : "SQUARE",
+          "shape" : "CIRCLE",
           "position" : {
-            "x" : 387.59999999999997,
-            "y" : 495.6,
+            "x" : 244.0,
+            "y" : 434.0,
             "hash" : 0
           },
           "attachedConnection" : 3
@@ -48,8 +48,8 @@
           "y" : 440.0,
           "hash" : 0
         }, {
-          "x" : 393.59999999999997,
-          "y" : 501.6,
+          "x" : 250.0,
+          "y" : 440.0,
           "hash" : 0
         } ]
       }
@@ -61,8 +61,8 @@
     "@id" : 5,
     "id" : "destination_system",
     "position" : {
-      "x" : 825.6000000000001,
-      "y" : 374.40000000000003,
+      "x" : 1072.0,
+      "y" : 495.2000000000001,
       "hash" : 0
     },
     "inputPorts" : [ {
@@ -71,20 +71,20 @@
       "type" : "INPUT",
       "shape" : "SQUARE",
       "position" : {
-        "x" : 819.6000000000001,
-        "y" : 408.40000000000003,
+        "x" : 1066.0,
+        "y" : 529.2,
         "hash" : 0
       },
       "attachedConnection" : {
         "@id" : 7,
         "startPort" : {
           "@id" : 8,
-          "id" : "relay2_out",
+          "id" : "sab_out",
           "type" : "OUTPUT",
-          "shape" : "TRIANGLE",
+          "shape" : "CIRCLE",
           "position" : {
-            "x" : 714.0,
-            "y" : 634.0,
+            "x" : 1029.1999999999998,
+            "y" : 534.8000000000001,
             "hash" : 0
           },
           "attachedConnection" : 7
@@ -92,12 +92,12 @@
         "endPort" : 6,
         "bendPoints" : [ ],
         "pathPoints" : [ {
-          "x" : 720.0,
-          "y" : 640.0,
+          "x" : 1035.1999999999998,
+          "y" : 540.8000000000001,
           "hash" : 0
         }, {
-          "x" : 825.6000000000001,
-          "y" : 414.40000000000003,
+          "x" : 1072.0,
+          "y" : 535.2,
           "hash" : 0
         } ]
       }
@@ -110,44 +110,80 @@
     "@id" : 9,
     "id" : "relay_system_1",
     "position" : {
-      "x" : 393.59999999999997,
-      "y" : 461.6,
+      "x" : 435.2,
+      "y" : 308.0,
       "hash" : 0
     },
-    "inputPorts" : [ 4 ],
-    "outputPorts" : [ {
+    "inputPorts" : [ {
       "@id" : 10,
-      "id" : "relay1_out",
-      "type" : "OUTPUT",
+      "id" : "relay1_in",
+      "type" : "INPUT",
       "shape" : "SQUARE",
       "position" : {
-        "x" : 507.5999999999999,
-        "y" : 495.6,
+        "x" : 429.2,
+        "y" : 342.0,
         "hash" : 0
       },
       "attachedConnection" : {
         "@id" : 11,
-        "startPort" : 10,
-        "endPort" : {
+        "startPort" : {
           "@id" : 12,
-          "id" : "relay2_in",
-          "type" : "INPUT",
+          "id" : "dist_out_top",
+          "type" : "OUTPUT",
           "shape" : "TRIANGLE",
           "position" : {
-            "x" : 594.0,
-            "y" : 634.0,
+            "x" : 364.0,
+            "y" : 420.6666666666667,
             "hash" : 0
           },
           "attachedConnection" : 11
         },
+        "endPort" : 10,
         "bendPoints" : [ ],
         "pathPoints" : [ {
-          "x" : 513.5999999999999,
-          "y" : 501.6,
+          "x" : 370.0,
+          "y" : 426.6666666666667,
           "hash" : 0
         }, {
-          "x" : 600.0,
-          "y" : 640.0,
+          "x" : 435.2,
+          "y" : 348.0,
+          "hash" : 0
+        } ]
+      }
+    } ],
+    "outputPorts" : [ {
+      "@id" : 13,
+      "id" : "relay1_out",
+      "type" : "OUTPUT",
+      "shape" : "SQUARE",
+      "position" : {
+        "x" : 549.2,
+        "y" : 342.0,
+        "hash" : 0
+      },
+      "attachedConnection" : {
+        "@id" : 14,
+        "startPort" : 13,
+        "endPort" : {
+          "@id" : 15,
+          "id" : "relay2_in",
+          "type" : "INPUT",
+          "shape" : "TRIANGLE",
+          "position" : {
+            "x" : 587.6000000000001,
+            "y" : 468.4000000000001,
+            "hash" : 0
+          },
+          "attachedConnection" : 14
+        },
+        "bendPoints" : [ ],
+        "pathPoints" : [ {
+          "x" : 555.2,
+          "y" : 348.0,
+          "hash" : 0
+        }, {
+          "x" : 593.6000000000001,
+          "y" : 474.4000000000001,
           "hash" : 0
         } ]
       }
@@ -156,82 +192,348 @@
     "justArrivedPackets" : [ ]
   }, {
     "type" : "NormalSystem",
-    "@id" : 13,
+    "@id" : 16,
     "id" : "relay_system_2",
     "position" : {
-      "x" : 600.0,
-      "y" : 600.0,
+      "x" : 593.6000000000001,
+      "y" : 434.4000000000001,
       "hash" : 0
     },
-    "inputPorts" : [ 12 ],
-    "outputPorts" : [ 8 ],
+    "inputPorts" : [ 15 ],
+    "outputPorts" : [ {
+      "@id" : 17,
+      "id" : "relay2_out",
+      "type" : "OUTPUT",
+      "shape" : "TRIANGLE",
+      "position" : {
+        "x" : 707.6000000000001,
+        "y" : 468.4000000000001,
+        "hash" : 0
+      },
+      "attachedConnection" : {
+        "@id" : 18,
+        "startPort" : 17,
+        "endPort" : {
+          "@id" : 19,
+          "id" : "merge_in_top",
+          "type" : "INPUT",
+          "shape" : "CIRCLE",
+          "position" : {
+            "x" : 762.4,
+            "y" : 520.6666666666666,
+            "hash" : 0
+          },
+          "attachedConnection" : 18
+        },
+        "bendPoints" : [ ],
+        "pathPoints" : [ {
+          "x" : 713.6000000000001,
+          "y" : 474.4000000000001,
+          "hash" : 0
+        }, {
+          "x" : 768.4,
+          "y" : 526.6666666666666,
+          "hash" : 0
+        } ]
+      }
+    } ],
     "packetBuffer" : [ ],
     "justArrivedPackets" : [ ]
-  } ],
-  "packets" : [ {
-    "packetType" : "TrianglePacket",
-    "@id" : 14,
+  }, {
+    "type" : "DistributeSystem",
+    "@id" : 20,
+    "id" : "distribute_1",
     "position" : {
-      "x" : 546.0392898370192,
-      "y" : 553.5629364981882,
+      "x" : 250.0,
+      "y" : 400.0,
       "hash" : 0
     },
-    "currentConnection" : 11,
-    "destinationPort" : 12,
-    "currentSpeed" : 98.53713999999998,
-    "noise" : 0.0,
-    "size" : 3,
-    "path" : [ {
-      "x" : 513.5999999999999,
-      "y" : 501.6,
-      "hash" : 0
-    }, {
-      "x" : 600.0,
-      "y" : 640.0,
-      "hash" : 0
+    "inputPorts" : [ 4 ],
+    "outputPorts" : [ 12, {
+      "@id" : 21,
+      "id" : "dist_out_bottom",
+      "type" : "OUTPUT",
+      "shape" : "SQUARE",
+      "position" : {
+        "x" : 364.0,
+        "y" : 447.3333333333333,
+        "hash" : 0
+      },
+      "attachedConnection" : {
+        "@id" : 22,
+        "startPort" : 21,
+        "endPort" : {
+          "@id" : 23,
+          "id" : "vpn_in",
+          "type" : "INPUT",
+          "shape" : "SQUARE",
+          "position" : {
+            "x" : 224.39999999999998,
+            "y" : 583.6,
+            "hash" : 0
+          },
+          "attachedConnection" : 22
+        },
+        "bendPoints" : [ ],
+        "pathPoints" : [ {
+          "x" : 370.0,
+          "y" : 453.3333333333333,
+          "hash" : 0
+        }, {
+          "x" : 230.39999999999998,
+          "y" : 589.6,
+          "hash" : 0
+        } ]
+      }
     } ],
-    "currentPathIndex" : 0,
-    "isAccelerating" : true,
-    "coinValue" : 3,
-    "visualPosition" : {
-      "x" : 546.0392898370192,
-      "y" : 553.5629364981882,
-      "hash" : 0
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ],
+    "random" : {
+      "deprecated" : false
     }
   }, {
-    "packetType" : "SquarePacket",
-    "@id" : 15,
+    "type" : "SaboteurSystem",
+    "@id" : 24,
+    "id" : "saboteur_1",
     "position" : {
-      "x" : 752.3583477960417,
-      "y" : 570.8708024357295,
+      "x" : 915.1999999999999,
+      "y" : 500.80000000000007,
       "hash" : 0
     },
-    "currentConnection" : 7,
-    "destinationPort" : 6,
-    "currentSpeed" : 100.0,
-    "noise" : 0.0,
-    "size" : 2,
-    "path" : [ {
-      "x" : 720.0,
-      "y" : 640.0,
-      "hash" : 0
-    }, {
-      "x" : 825.6000000000001,
-      "y" : 414.40000000000003,
-      "hash" : 0
+    "inputPorts" : [ {
+      "@id" : 25,
+      "id" : "sab_in",
+      "type" : "INPUT",
+      "shape" : "TRIANGLE",
+      "position" : {
+        "x" : 909.1999999999999,
+        "y" : 534.8000000000001,
+        "hash" : 0
+      },
+      "attachedConnection" : {
+        "@id" : 26,
+        "startPort" : {
+          "@id" : 27,
+          "id" : "merge_out",
+          "type" : "OUTPUT",
+          "shape" : "CIRCLE",
+          "position" : {
+            "x" : 882.4,
+            "y" : 534.0,
+            "hash" : 0
+          },
+          "attachedConnection" : 26
+        },
+        "endPort" : 25,
+        "bendPoints" : [ ],
+        "pathPoints" : [ {
+          "x" : 888.4,
+          "y" : 540.0,
+          "hash" : 0
+        }, {
+          "x" : 915.1999999999999,
+          "y" : 540.8000000000001,
+          "hash" : 0
+        } ]
+      }
     } ],
-    "currentPathIndex" : 0,
-    "coinValue" : 2,
-    "visualPosition" : {
-      "x" : 752.3583477960417,
-      "y" : 570.8708024357295,
-      "hash" : 0
+    "outputPorts" : [ 8 ],
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ],
+    "random" : {
+      "deprecated" : false
     }
+  }, {
+    "type" : "AntiTrojanSystem",
+    "@id" : 28,
+    "id" : "anti_trojan_1",
+    "position" : {
+      "x" : 650.0,
+      "y" : 50.0,
+      "hash" : 0
+    },
+    "inputPorts" : [ ],
+    "outputPorts" : [ ],
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ],
+    "currentCooldown" : 0.0
+  }, {
+    "type" : "VPNSystem",
+    "@id" : 29,
+    "id" : "vpn_1",
+    "position" : {
+      "x" : 230.39999999999998,
+      "y" : 549.6,
+      "hash" : 0
+    },
+    "inputPorts" : [ 23 ],
+    "outputPorts" : [ {
+      "@id" : 30,
+      "id" : "vpn_out",
+      "type" : "OUTPUT",
+      "shape" : "SQUARE",
+      "position" : {
+        "x" : 344.4,
+        "y" : 583.6,
+        "hash" : 0
+      },
+      "attachedConnection" : {
+        "@id" : 31,
+        "startPort" : 30,
+        "endPort" : {
+          "@id" : 32,
+          "id" : "spy1_in",
+          "type" : "INPUT",
+          "shape" : "SQUARE",
+          "position" : {
+            "x" : 394.3999999999999,
+            "y" : 590.4,
+            "hash" : 0
+          },
+          "attachedConnection" : 31
+        },
+        "bendPoints" : [ ],
+        "pathPoints" : [ {
+          "x" : 350.4,
+          "y" : 589.6,
+          "hash" : 0
+        }, {
+          "x" : 400.3999999999999,
+          "y" : 596.4,
+          "hash" : 0
+        } ]
+      }
+    } ],
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ]
+  }, {
+    "type" : "SpySystem",
+    "@id" : 33,
+    "id" : "spy_1",
+    "position" : {
+      "x" : 400.3999999999999,
+      "y" : 556.4,
+      "hash" : 0
+    },
+    "inputPorts" : [ 32 ],
+    "outputPorts" : [ {
+      "@id" : 34,
+      "id" : "spy1_out",
+      "type" : "OUTPUT",
+      "shape" : "TRIANGLE",
+      "position" : {
+        "x" : 514.3999999999999,
+        "y" : 590.4,
+        "hash" : 0
+      },
+      "attachedConnection" : {
+        "@id" : 35,
+        "startPort" : 34,
+        "endPort" : {
+          "@id" : 36,
+          "id" : "spy2_in",
+          "type" : "INPUT",
+          "shape" : "TRIANGLE",
+          "position" : {
+            "x" : 590.8,
+            "y" : 607.1999999999999,
+            "hash" : 0
+          },
+          "attachedConnection" : 35
+        },
+        "bendPoints" : [ ],
+        "pathPoints" : [ {
+          "x" : 520.3999999999999,
+          "y" : 596.4,
+          "hash" : 0
+        }, {
+          "x" : 596.8,
+          "y" : 613.1999999999999,
+          "hash" : 0
+        } ]
+      }
+    } ],
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ],
+    "random" : {
+      "deprecated" : false
+    }
+  }, {
+    "type" : "SpySystem",
+    "@id" : 37,
+    "id" : "spy_2",
+    "position" : {
+      "x" : 596.8,
+      "y" : 573.1999999999999,
+      "hash" : 0
+    },
+    "inputPorts" : [ 36 ],
+    "outputPorts" : [ {
+      "@id" : 38,
+      "id" : "spy2_out",
+      "type" : "OUTPUT",
+      "shape" : "CIRCLE",
+      "position" : {
+        "x" : 710.8,
+        "y" : 607.1999999999999,
+        "hash" : 0
+      },
+      "attachedConnection" : {
+        "@id" : 39,
+        "startPort" : 38,
+        "endPort" : {
+          "@id" : 40,
+          "id" : "merge_in_bottom",
+          "type" : "INPUT",
+          "shape" : "CIRCLE",
+          "position" : {
+            "x" : 762.4,
+            "y" : 547.3333333333334,
+            "hash" : 0
+          },
+          "attachedConnection" : 39
+        },
+        "bendPoints" : [ ],
+        "pathPoints" : [ {
+          "x" : 716.8,
+          "y" : 613.1999999999999,
+          "hash" : 0
+        }, {
+          "x" : 768.4,
+          "y" : 553.3333333333334,
+          "hash" : 0
+        } ]
+      }
+    } ],
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ],
+    "random" : {
+      "deprecated" : false
+    }
+  }, {
+    "type" : "MergeSystem",
+    "@id" : 41,
+    "id" : "merge_1",
+    "position" : {
+      "x" : 768.4,
+      "y" : 500.0,
+      "hash" : 0
+    },
+    "inputPorts" : [ 19, 40 ],
+    "outputPorts" : [ 27 ],
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ],
+    "collectedBitPackets" : { }
   } ],
+  "packets" : [ ],
   "packetsToRemove" : [ ],
-  "connections" : [ 3, 7, 11 ],
-  "spawnEvents" : [ ],
-  "packetsSucceeded" : 2,
+  "connections" : [ 14, 3, 11, 22, 31, 35, 18, 39, 26, 7 ],
+  "spawnEvents" : [ {
+    "spawnTime" : 3.0,
+    "sourceSystemId" : "source_system",
+    "packetType" : "LargePacketTypeA"
+  } ],
+  "packetsSucceeded" : 4,
   "activePowerUps" : [ ],
   "largePacketRegistry" : { },
   "destinationSystem" : 5,

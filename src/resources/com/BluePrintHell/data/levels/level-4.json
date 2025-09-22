@@ -1,0 +1,28 @@
+{
+  "levelNumber": 4,
+  "levelName": "Netherhell",
+  "initialWireLength": 5000.0,
+  "initialCoins": 50,
+  "systems": [
+    { "id": "SOURCE", "type": "REFERENCE", "x": 50, "y": 400, "inputPorts": [], "outputPorts": [{"id": "s_out", "shape": "CIRCLE"}] },
+    { "id": "DEST", "type": "REFERENCE", "x": 1350, "y": 400, "inputPorts": [{"id": "d_in", "shape": "CIRCLE"}], "outputPorts": [] },
+    { "id": "DIST", "type": "DistributeSystem", "x": 200, "y": 400, "inputPorts": [{"id": "dist_in", "shape": "CIRCLE"}], "outputPorts": [{"id": "dist_out_N", "shape": "SQUARE"}, {"id": "dist_out_S", "shape": "SQUARE"}, {"id": "dist_out_C", "shape": "SQUARE"}] },
+
+    { "id": "SAB_N1", "type": "SaboteurSystem", "x": 400, "y": 150, "inputPorts": [{"id": "sabN1_in", "shape": "SQUARE"}], "outputPorts": [{"id": "sabN1_out", "shape": "TRIANGLE"}] },
+    { "id": "SAB_N2", "type": "SaboteurSystem", "x": 600, "y": 250, "inputPorts": [{"id": "sabN2_in", "shape": "TRIANGLE"}], "outputPorts": [{"id": "sabN2_out", "shape": "CIRCLE"}] },
+    { "id": "AT_N", "type": "AntiTrojanSystem", "x": 500, "y": 50, "inputPorts": [], "outputPorts": [] },
+
+    { "id": "VPN_S", "type": "VPNSystem", "x": 400, "y": 650, "inputPorts": [{"id": "vpnS_in", "shape": "SQUARE"}], "outputPorts": [{"id": "vpnS_out", "shape": "SQUARE"}] },
+    { "id": "SPY_S1", "type": "SpySystem", "x": 600, "y": 750, "inputPorts": [{"id": "spyS1_in", "shape": "SQUARE"}], "outputPorts": [{"id": "spyS1_out", "shape": "CIRCLE"}] },
+    { "id": "SPY_S2", "type": "SpySystem", "x": 800, "y": 600, "inputPorts": [{"id": "spyS2_in", "shape": "CIRCLE"}], "outputPorts": [{"id": "spyS2_out", "shape": "CIRCLE"}] },
+
+
+    { "id": "RELAY_C1", "type": "NORMAL", "x": 500, "y": 400, "inputPorts": [{"id": "rC1_in", "shape": "SQUARE"}], "outputPorts": [{"id": "rC1_out", "shape": "CIRCLE"}] },
+    { "id": "RELAY_C2", "type": "NORMAL", "x": 700, "y": 400, "inputPorts": [{"id": "rC2_in", "shape": "CIRCLE"}], "outputPorts": [{"id": "rC2_out", "shape": "CIRCLE"}] },
+
+    { "id": "MERGE", "type": "MergeSystem", "x": 1150, "y": 400, "inputPorts": [{"id": "m_in_N", "shape": "CIRCLE"}, {"id": "m_in_S", "shape": "CIRCLE"}, {"id": "m_in_C", "shape": "CIRCLE"}], "outputPorts": [{"id": "m_out", "shape": "CIRCLE"}] }
+  ],
+  "spawnEvents": [
+    { "spawnTime": 2.0, "sourceSystemId": "SOURCE", "packetType": "LargePacketTypeB" }
+  ]
+}

@@ -1,15 +1,12 @@
 package com.BluePrintHell.controller;
 
+import com.BluePrintHell.model.network.*;
+import com.BluePrintHell.model.packets.*;
 import com.BluePrintHell.util.SaveManager;
 import com.BluePrintHell.GameManager;
 import com.BluePrintHell.GamePhase;
 import com.BluePrintHell.model.*;
 import com.BluePrintHell.model.leveldata.SpawnEventData;
-import com.BluePrintHell.model.network.NetworkSystem;
-import com.BluePrintHell.model.packets.CirclePacket;
-import com.BluePrintHell.model.packets.Packet;
-import com.BluePrintHell.model.packets.SquarePacket;
-import com.BluePrintHell.model.packets.TrianglePacket;
 import com.BluePrintHell.view.GameScreenView;
 import com.BluePrintHell.util.CollisionManager;
 import javafx.animation.AnimationTimer;
@@ -451,14 +448,50 @@ public class GameController {
     private void drawSystem(NetworkSystem system) {
         double x = system.getPosition().getX();
         double y = system.getPosition().getY();
-        gc.setFill(Color.web("#4a4f5a"));
+
+        // رنگ پایه سیستم
+        Color systemColor = Color.web("#4a4f5a");
+        String systemLabel = "";
+
+        // تعیین رنگ و لیبل بر اساس نوع سیستم
+        if (system instanceof DistributeSystem) {
+            systemColor = Color.web("#006666");
+            systemLabel = "DIST";
+        } else if (system instanceof MergeSystem) {
+            systemColor = Color.web("#660066");
+            systemLabel = "MERGE";
+        } else if (system instanceof SaboteurSystem) {
+            systemColor = Color.web("#990000");
+            systemLabel = "SABOTEUR";
+        } else if (system instanceof VPNSystem) {
+            systemColor = Color.web("#0033cc");
+            systemLabel = "VPN";
+        } else if (system instanceof SpySystem) {
+            systemColor = Color.web("#cc9900");
+            systemLabel = "SPY";
+        } else if (system instanceof AntiTrojanSystem) {
+            systemColor = Color.web("#00994d");
+            systemLabel = "ANTI-T";
+        } else if (system instanceof ReferenceSystem) {
+            systemColor = Color.web("#333333");
+            systemLabel = system.getId().contains("source") ? "SOURCE" : "DEST";
+        }
+
+
+        gc.setFill(systemColor);
         gc.fillRoundRect(x, y, SYSTEM_WIDTH, SYSTEM_HEIGHT, 10, 10);
         gc.setStroke(Color.web("#7a7f8a"));
         gc.setLineWidth(1.5);
         gc.strokeRoundRect(x, y, SYSTEM_WIDTH, SYSTEM_HEIGHT, 10, 10);
-        gc.setStroke(Color.web("#00f0ff", 0.5));
-        gc.setLineWidth(3);
-        gc.strokeLine(x + 5, y + 5, x + SYSTEM_WIDTH - 5, y + 5);
+
+        // نمایش نوع سیستم
+        if (!systemLabel.isEmpty()) {
+            gc.setFill(Color.WHITE);
+            gc.setFont(new javafx.scene.text.Font("Orbitron", 14));
+            gc.fillText(systemLabel, x + 10, y + 20);
+        }
+
+        // اندیکاتور اتصال
         double indicatorSize = 10;
         double indicatorX = x + SYSTEM_WIDTH - indicatorSize - 5;
         double indicatorY = y + 5;
@@ -471,13 +504,50 @@ public class GameController {
         }
         gc.fillOval(indicatorX, indicatorY, indicatorSize, indicatorSize);
         gc.setEffect(null);
-    }
 
+        // کشیدن شعاع برای سیستم آنتی تروجان
+        if (system instanceof AntiTrojanSystem) {
+            AntiTrojanSystem ats = (AntiTrojanSystem) system;
+            gc.setStroke(ats.isActive() ? Color.web("#00994d", 0.5) : Color.web("#ff3b3b", 0.3));
+            gc.setLineWidth(2);
+            gc.strokeOval(ats.getCenterPosition().getX() - 150, ats.getCenterPosition().getY() - 150, 300, 300);
+        }
+    }
     private void drawPacket(Packet packet) {
         if (packet == null) return;
         Point2D pos = packet.getVisualPosition();
         double size = 10;
-        if (packet instanceof SquarePacket) {
+
+        // --- پکت‌های جدید ---
+        if (packet instanceof LargePacket) {
+            size = 20; // پکت حجیم بزرگتر است
+            gc.setFill(Color.MAGENTA);
+            gc.fillRect(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
+            gc.setStroke(Color.WHITE);
+            gc.strokeRect(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
+
+        } else if (packet instanceof BitPacket) {
+            size = 5;
+            int colorHash = ((BitPacket) packet).getParentLargePacketId().hashCode();
+            gc.setFill(Color.rgb(Math.abs(colorHash % 255), Math.abs(colorHash * 31 % 255), Math.abs(colorHash * 17 % 255)));
+            gc.fillOval(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
+
+        } else if (packet instanceof ProtectedPacket) {
+            gc.setFill(Color.CYAN);
+            gc.fillRect(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
+            gc.setEffect(new DropShadow(15, Color.CYAN));
+            gc.setStroke(Color.WHITE);
+            gc.strokeRect(pos.getX() - size / 2 - 2, pos.getY() - size / 2 - 2, size + 4, size + 4);
+            gc.setEffect(null);
+
+        } else if (packet instanceof TrojanPacket) {
+            size = 12;
+            gc.setFill(Color.RED);
+            double[] xPoints = {pos.getX(), pos.getX() - size, pos.getX() + size};
+            double[] yPoints = {pos.getY() + size/2, pos.getY() - size/2, pos.getY() - size/2};
+            gc.fillPolygon(xPoints, yPoints, 3);
+
+        } else if (packet instanceof SquarePacket) {
             gc.setFill(Color.LIGHTGREEN);
             gc.fillRect(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
         } else if (packet instanceof TrianglePacket) {
