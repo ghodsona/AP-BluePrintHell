@@ -1,18 +1,17 @@
 package com.BluePrintHell.model.network;
 
 import com.BluePrintHell.model.GameState;
+import com.BluePrintHell.model.Port;
 import com.BluePrintHell.model.packets.Packet;
-import com.BluePrintHell.model.packets.ProtectedPacket;
-// import com.BluePrintHell.model.packets.ConfidentialPacket;
 import javafx.geometry.Point2D;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class SpySystem extends NormalSystem { // می‌تواند از NormalSystem ارث‌بری کند
+public class SpySystem extends NormalSystem {
 
-    private final Random random = new Random();
+    private static final Random random = new Random();
 
     public SpySystem(String id, Point2D position) {
         super(id, position);
@@ -24,37 +23,38 @@ public class SpySystem extends NormalSystem { // می‌تواند از NormalSy
 
     @Override
     public void receivePacket(Packet packet) {
+        System.out.println("DEBUG: SpySystem " + this.id + " received packet " + packet.hashCode());
+        super.receivePacket(packet);
+    }
+
+    @Override
+    public void update(double deltaTime) {
+        if (packetBuffer.isEmpty()) {
+            return;
+        }
+
         GameState gs = getParentGameState();
-        if (gs == null) {
-            super.receivePacket(packet); // بازگشت به رفتار عادی در صورت نبودن GameState
-            return;
-        }
+        if (gs == null) return;
 
-        // پکت‌های محافظت‌شده تحت تاثیر قرار نمی‌گیرند
-        if (packet instanceof ProtectedPacket) {
-            super.receivePacket(packet);
-            return;
-        }
-
-        // TODO: در آینده که پکت‌های محرمانه اضافه شدند، این بخش را کامل کنید
-        // if (packet instanceof ConfidentialPacket) {
-        //     System.out.println("Confidential packet destroyed by SpySystem!");
-        //     getParentGameState().losePacket(packet);
-        //     return;
-        // }
-
-        // پیدا کردن تمام سیستم‌های جاسوسی دیگر در شبکه
-        List<SpySystem> otherSpySystems = gs.getSystems().stream()
-                .filter(s -> s instanceof SpySystem && s != this)
-                .map(s -> (SpySystem) s)
+        List<Port> availableExitPorts = gs.getSystems().stream()
+                .filter(s -> s instanceof SpySystem)
+                .flatMap(s -> s.getOutputPorts().stream())
+                .filter(p -> p.isConnected() && gs.isConnectionFree(p.getAttachedConnection()))
                 .collect(Collectors.toList());
 
-        if (!otherSpySystems.isEmpty()) {
-            SpySystem targetSystem = otherSpySystems.get(random.nextInt(otherSpySystems.size()));
-            System.out.println("Packet teleported from " + getId() + " to " + targetSystem.getId());
-            targetSystem.receivePacket(packet);
-        } else {
-            super.receivePacket(packet);
+        if (availableExitPorts.isEmpty()) {
+            System.out.println("DEBUG: No free exit port found in the entire Spy Network. Waiting...");
+            return;
         }
+
+        Packet packetToLaunch = packetBuffer.poll();
+        Port targetPort = availableExitPorts.get(random.nextInt(availableExitPorts.size()));
+
+        System.out.println("DEBUG: Spy network routing packet " + packetToLaunch.hashCode() + " to exit port " + targetPort.getId() + " on system " + targetPort.getParentSystem().getId());
+
+        Point2D spawnPosition = targetPort.getCenterPosition();
+        packetToLaunch.setPosition(spawnPosition);
+        packetToLaunch.launch(targetPort.getAttachedConnection());
+        gs.addPacket(packetToLaunch);
     }
 }

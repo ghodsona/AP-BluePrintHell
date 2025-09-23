@@ -17,7 +17,7 @@ public class ReferenceSystem extends NetworkSystem {
     public void receivePacket(Packet packet) {
         // If this is a destination reference system (has inputs, no outputs)
         if (!this.getInputPorts().isEmpty() && this.getOutputPorts().isEmpty()) {
-            System.out.println("Packet successfully reached destination: " + this.id);
+            System.out.println("DEBUG: Packet " + packet.hashCode() + " successfully reached destination: " + this.id);
             this.getParentGameState().incrementPacketsSucceeded();
             // The packet is not added to the buffer, it just disappears.
         } else {

@@ -437,6 +437,7 @@ public class GameController {
             if (sourceSystem != null) {
                 Packet newPacket = createPacketFromType(nextEvent.getPacketType(), new Point2D(0, 0));
                 if (newPacket != null) {
+                    System.out.println("DEBUG: Spawning packet " + newPacket.hashCode() + " of type " + nextEvent.getPacketType() + " at system " + sourceSystem.getId());
                     sourceSystem.receivePacket(newPacket);
                     gameState.incrementTotalPacketsSpawned();
                 }
@@ -449,7 +450,6 @@ public class GameController {
         double x = system.getPosition().getX();
         double y = system.getPosition().getY();
 
-        // رنگ پایه سیستم
         Color systemColor = Color.web("#4a4f5a");
         String systemLabel = "";
 

@@ -49,6 +49,7 @@ public abstract class NetworkSystem {
     }
 
     public void receivePacket(Packet packet) {
+        System.out.println("DEBUG: System " + this.id + " received packet " + packet.hashCode());
         if (packetBuffer.size() < BUFFER_CAPACITY) {
             packetBuffer.add(packet);
             justArrivedPackets.add(packet);
@@ -58,7 +59,7 @@ public abstract class NetworkSystem {
             }
         } else {
             System.out.println("DEBUG: Packet " + packet.hashCode() + " is lost. Reason: Buffer is full for system " + this.id);
-            this.getParentGameState().losePacket(packet); // از متد مرکزی برای از دست دادن پکت استفاده می‌کنیم
+            this.getParentGameState().losePacket(packet);
         }
     }
 

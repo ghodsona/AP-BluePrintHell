@@ -1,5 +1,6 @@
 package com.BluePrintHell.model.leveldata;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SystemData {
@@ -7,10 +8,9 @@ public class SystemData {
     private String type; // e.g., "REFERENCE", "NORMAL"
     private double x;
     private double y;
-    private List<PortData> inputPorts;
-    private List<PortData> outputPorts;
+    private List<PortData> inputPorts = new ArrayList<>();
+    private List<PortData> outputPorts = new ArrayList<>();
 
-    // Getters and Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public String getType() { return type; }

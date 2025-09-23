@@ -35,7 +35,7 @@ public class NormalSystem extends NetworkSystem {
 
             if (isSpawnAreaClear) {
                 packetBuffer.poll();
-
+                System.out.println("DEBUG: System " + this.getId() + " is launching packet " + packetToLaunch.hashCode() + " from port " + targetPort.getId());
                 packetToLaunch.setPosition(spawnPosition);
                 packetToLaunch.launch(targetPort.getAttachedConnection());
                 this.getParentGameState().addPacket(packetToLaunch);
