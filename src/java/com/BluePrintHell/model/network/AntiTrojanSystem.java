@@ -64,26 +64,19 @@ public class AntiTrojanSystem extends NormalSystem {
     private void neutralizeTrojan(TrojanPacket trojanPacket) {
         GameState gs = getParentGameState();
         if (gs == null) return;
-
         SquarePacket newPacket = new SquarePacket(trojanPacket.getVisualPosition());
 
-        // اگر پکت تروجان در حال حرکت روی یک اتصال بود، پکت جدید مسیر آن را ادامه می‌دهد
         if (trojanPacket.getCurrentConnection() != null) {
-            newPacket.launch(trojanPacket.getCurrentConnection());
+            newPacket.takeOverPath(trojanPacket);
         }
 
-        // پکت جدید را به بازی اضافه می‌کند
         gs.addPacket(newPacket);
-
-        // پکت تروجان را برای حذف علامت‌گذاری می‌کند
         gs.removePacket(trojanPacket);
     }
 
-    // متد کمکی برای گرفتن مرکز سیستم برای محاسبه دقیق‌تر فاصله
     @JsonIgnore
     public Point2D getCenterPosition() {
         if (position == null) return Point2D.ZERO;
-        // این مقادیر از GameController گرفته شده‌اند
         double SYSTEM_WIDTH = 120;
         double SYSTEM_HEIGHT = 80;
         return new Point2D(position.getX() + SYSTEM_WIDTH / 2, position.getY() + SYSTEM_HEIGHT / 2);

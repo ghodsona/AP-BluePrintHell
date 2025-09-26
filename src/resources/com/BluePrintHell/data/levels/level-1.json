@@ -1,7 +1,7 @@
 {
   "levelNumber": 1,
-  "levelName": "Spy System Test",
-  "initialWireLength": 2000.0,
+  "levelName": "Anti-Trojan System Test",
+  "initialWireLength": 2500.0,
   "initialCoins": 20,
   "systems": [
     {
@@ -21,23 +21,26 @@
       "outputPorts": []
     },
     {
-      "id": "SPY_A",
-      "type": "SPYSYSTEM",
-      "x": 400,
-      "y": 200,
-      "inputPorts": [{"id": "spy_a_in", "shape": "SQUARE"}],
-      "outputPorts": [{"id": "spy_a_out", "shape": "SQUARE"}]
+      "id": "SABOTEUR_A",
+      "type": "SABOTEURSYSTEM",
+      "x": 450,
+      "y": 400,
+      "inputPorts": [{"id": "sab_a_in", "shape": "SQUARE"}],
+      "outputPorts": [{"id": "sab_a_out", "shape": "SQUARE"}]
     },
     {
-      "id": "SPY_B",
-      "type": "SPYSYSTEM",
-      "x": 800,
-      "y": 600,
-      "inputPorts": [{"id": "spy_b_in", "shape": "SQUARE"}],
-      "outputPorts": [{"id": "spy_b_out", "shape": "SQUARE"}]
+      "id": "ANTI_TROJAN_1",
+      "type": "ANTITROJANSYSTEM",
+      "x": 750,
+      "y": 250,
+      "inputPorts": [],
+      "outputPorts": []
     }
   ],
   "spawnEvents": [
-    {"spawnTime": 2.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"}
+    {"spawnTime": 2.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"},
+    {"spawnTime": 3.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"},
+    {"spawnTime": 4.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"},
+    {"spawnTime": 5.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"}
   ]
 }

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Random;
 
 public class SaboteurSystem extends NetworkSystem {
-    private static final double TROJAN_CONVERSION_CHANCE = 0.25; // 25% احتمال تبدیل
+    private static final double TROJAN_CONVERSION_CHANCE = 1;
     private final Random random = new Random();
 
     public SaboteurSystem(String id, Point2D position) {
@@ -26,15 +26,18 @@ public class SaboteurSystem extends NetworkSystem {
 
     @Override
     public void receivePacket(Packet packet) {
+        // Packets protected by a VPN are immune
         if (packet instanceof ProtectedPacket) {
             super.receivePacket(packet);
             return;
         }
 
+        // Add noise if the packet is clean
         if (packet.getNoise() == 0) {
             packet.addNoise(1);
         }
 
+        // 25% chance to convert the packet to a Trojan
         if (random.nextDouble() < TROJAN_CONVERSION_CHANCE) {
             System.out.println("Packet converted to Trojan!");
             TrojanPacket trojanPacket = new TrojanPacket(packet.getPosition());
@@ -54,6 +57,24 @@ public class SaboteurSystem extends NetworkSystem {
         Port targetPort = findOutputPortFor(packetToLaunch);
 
         if (targetPort != null) {
+            // This logic is copied from NormalSystem to correctly launch the packet
+            boolean isSpawnAreaClear = true;
+            Point2D spawnPosition = targetPort.getCenterPosition();
+
+            for (Packet existingPacket : this.getParentGameState().getPackets()) {
+                if (existingPacket.getVisualPosition().distance(spawnPosition) < 20) {
+                    isSpawnAreaClear = false;
+                    break;
+                }
+            }
+
+            if (isSpawnAreaClear) {
+                packetBuffer.poll(); // Remove packet from buffer
+                System.out.println("DEBUG: SaboteurSystem " + this.getId() + " is launching packet " + packetToLaunch.hashCode() + " from port " + targetPort.getId());
+                packetToLaunch.setPosition(spawnPosition);
+                packetToLaunch.launch(targetPort.getAttachedConnection());
+                this.getParentGameState().addPacket(packetToLaunch);
+            }
         }
     }
 
@@ -69,9 +90,10 @@ public class SaboteurSystem extends NetworkSystem {
         }
 
         if (availablePorts.isEmpty()) {
-            return null;
+            return null; // No free ports at all
         }
 
+        // Sabotage logic: First, try to find an INCOMPATIBLE port
         List<Port> incompatiblePorts = new ArrayList<>();
         for (Port port : availablePorts) {
             if (!packet.isCompatibleWith(port.getShape())) {
@@ -81,8 +103,9 @@ public class SaboteurSystem extends NetworkSystem {
 
         if (!incompatiblePorts.isEmpty()) {
             Collections.shuffle(incompatiblePorts);
-            return incompatiblePorts.get(0);
+            return incompatiblePorts.get(0); // Prioritize sending to a wrong port
         } else {
+            // If no incompatible ports are free, send to any free port
             Collections.shuffle(availablePorts);
             return availablePorts.get(0);
         }

@@ -135,4 +135,13 @@ public abstract class Packet {
     public int getSize() { return this.size; }
     public void addNoise(double amount) { this.noise += amount; }
     public double getNoise() { return this.noise; }
+
+    public void takeOverPath(Packet other) {
+        this.currentConnection = other.currentConnection;
+        this.destinationPort = other.destinationPort;
+        this.path = other.path;
+        this.currentPathIndex = other.currentPathIndex;
+        this.position = other.position;
+        this.currentSpeed = other.currentSpeed; // CRITICAL FIX: Transfer the speed as well
+    }
 }

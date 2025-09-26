@@ -520,14 +520,16 @@ public class GameController {
             gc.strokeOval(ats.getCenterPosition().getX() - 150, ats.getCenterPosition().getY() - 150, 300, 300);
         }
     }
+
+
     private void drawPacket(Packet packet) {
-        if (packet == null) return;
+        if (packet == null || packet.getVisualPosition() == null) return;
         Point2D pos = packet.getVisualPosition();
         double size = 10;
 
-        // --- پکت‌های جدید ---
+        // --- Packet Drawing Logic ---
         if (packet instanceof LargePacket) {
-            size = 20; // پکت حجیم بزرگتر است
+            size = 20;
             gc.setFill(Color.MAGENTA);
             gc.fillRect(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
             gc.setStroke(Color.WHITE);
@@ -569,6 +571,27 @@ public class GameController {
             gc.setFill(Color.WHITE);
             gc.fillOval(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
         }
+
+        // START: Corrected Noise Bar Drawing Logic
+        if (packet.getNoise() > 0 && packet.getSize() > 0) {
+            double noisePercentage = Math.min(1.0, packet.getNoise() / packet.getSize());
+            if (Double.isNaN(noisePercentage) || Double.isInfinite(noisePercentage)) {
+                noisePercentage = 1.0;
+            }
+            Color noiseColor = Color.LIMEGREEN.interpolate(Color.RED, noisePercentage);
+
+            double barWidth = 20;
+            double barHeight = 4;
+            double barY = pos.getY() - (size / 2) - 8;
+            double barX = pos.getX() - barWidth / 2;
+
+            gc.setFill(Color.BLACK);
+            gc.fillRect(barX - 1, barY - 1, barWidth + 2, barHeight + 2);
+
+            gc.setFill(noiseColor);
+            gc.fillRect(barX, barY, barWidth * noisePercentage, barHeight);
+        }
+        // END: Corrected Noise Bar Drawing Logic
     }
 
     private void drawPort(Port port) {
