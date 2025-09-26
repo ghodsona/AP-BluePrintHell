@@ -512,7 +512,6 @@ public class GameController {
         gc.fillOval(indicatorX, indicatorY, indicatorSize, indicatorSize);
         gc.setEffect(null);
 
-        // کشیدن شعاع برای سیستم آنتی تروجان
         if (system instanceof AntiTrojanSystem) {
             AntiTrojanSystem ats = (AntiTrojanSystem) system;
             gc.setStroke(ats.isActive() ? Color.web("#00994d", 0.5) : Color.web("#ff3b3b", 0.3));
@@ -527,7 +526,7 @@ public class GameController {
         Point2D pos = packet.getVisualPosition();
         double size = 10;
 
-        // --- Packet Drawing Logic ---
+        // --- Packet Drawing Logic (unchanged) ---
         if (packet instanceof LargePacket) {
             size = 20;
             gc.setFill(Color.MAGENTA);
@@ -572,26 +571,33 @@ public class GameController {
             gc.fillOval(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
         }
 
-        // START: Corrected Noise Bar Drawing Logic
-        if (packet.getNoise() > 0 && packet.getSize() > 0) {
+        // START: Health Bar Logic
+        if (packet.getSize() > 0) {
             double noisePercentage = Math.min(1.0, packet.getNoise() / packet.getSize());
-            if (Double.isNaN(noisePercentage) || Double.isInfinite(noisePercentage)) {
-                noisePercentage = 1.0;
-            }
-            Color noiseColor = Color.LIMEGREEN.interpolate(Color.RED, noisePercentage);
+            double healthPercentage = 1.0 - noisePercentage;
+
+            Color healthColor = Color.RED.interpolate(Color.LIMEGREEN, healthPercentage);
 
             double barWidth = 20;
             double barHeight = 4;
             double barY = pos.getY() - (size / 2) - 8;
             double barX = pos.getX() - barWidth / 2;
 
+            // Draw the background
             gc.setFill(Color.BLACK);
             gc.fillRect(barX - 1, barY - 1, barWidth + 2, barHeight + 2);
 
-            gc.setFill(noiseColor);
-            gc.fillRect(barX, barY, barWidth * noisePercentage, barHeight);
+            // Draw the used/lost health part (gray)
+            gc.setFill(Color.DARKGRAY);
+            gc.fillRect(barX, barY, barWidth, barHeight);
+
+            // Draw the remaining health
+            if (healthPercentage > 0) {
+                gc.setFill(healthColor);
+                gc.fillRect(barX, barY, barWidth * healthPercentage, barHeight);
+            }
         }
-        // END: Corrected Noise Bar Drawing Logic
+        // END: Health Bar Logic
     }
 
     private void drawPort(Port port) {

@@ -142,6 +142,7 @@ public abstract class Packet {
         this.path = other.path;
         this.currentPathIndex = other.currentPathIndex;
         this.position = other.position;
-        this.currentSpeed = other.currentSpeed; // CRITICAL FIX: Transfer the speed as well
+        this.currentSpeed = other.currentSpeed;
+        // this.noise = other.getNoise();
     }
 }

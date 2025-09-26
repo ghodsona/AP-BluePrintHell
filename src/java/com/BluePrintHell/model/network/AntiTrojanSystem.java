@@ -28,10 +28,8 @@ public class AntiTrojanSystem extends NormalSystem {
 
     @Override
     public void update(double deltaTime) {
-        // ابتدا بافر ورودی را پردازش کرده و پکت‌ها را مانند یک سیستم عادی پرتاب می‌کند
-        super.update(deltaTime); // این فراخوانی حالا صحیح است
+        super.update(deltaTime);
 
-        // اگر سیستم در حالت Cooldown باشد، زمان آن را کم کرده و خارج می‌شود
         if (!isActive()) {
             currentCooldown -= deltaTime;
             return;
@@ -40,7 +38,6 @@ public class AntiTrojanSystem extends NormalSystem {
         GameState gs = getParentGameState();
         if (gs == null) return;
 
-        // اسکن محیط اطراف برای پیدا کردن پکت‌های تروجان
         for (Packet packet : gs.getPackets()) {
             if (packet instanceof TrojanPacket) {
                 double distance = this.getCenterPosition().distance(packet.getVisualPosition());
@@ -48,13 +45,9 @@ public class AntiTrojanSystem extends NormalSystem {
                 if (distance <= SCAN_RADIUS) {
                     System.out.println("Trojan packet neutralized!");
 
-                    // پکت تروجان را با یک پکت عادی جایگزین می‌کند
                     neutralizeTrojan((TrojanPacket) packet);
-
-                    // سیستم را وارد حالت Cooldown می‌کند
                     this.currentCooldown = COOLDOWN_TIME;
 
-                    // در هر فریم فقط یک تروجان خنثی می‌شود
                     break;
                 }
             }
@@ -64,14 +57,31 @@ public class AntiTrojanSystem extends NormalSystem {
     private void neutralizeTrojan(TrojanPacket trojanPacket) {
         GameState gs = getParentGameState();
         if (gs == null) return;
-        SquarePacket newPacket = new SquarePacket(trojanPacket.getVisualPosition());
 
-        if (trojanPacket.getCurrentConnection() != null) {
-            newPacket.takeOverPath(trojanPacket);
+        try {
+            Class<? extends Packet> originalClass = trojanPacket.getOriginalPacketClass();
+            if (originalClass == null) {
+                originalClass = SquarePacket.class;
+            }
+
+            Packet newPacket = originalClass.getConstructor(Point2D.class).newInstance(trojanPacket.getVisualPosition());
+            if (trojanPacket.getCurrentConnection() != null) {
+                newPacket.takeOverPath(trojanPacket);
+            }
+
+            gs.addPacket(newPacket);
+            gs.removePacket(trojanPacket);
+
+        } catch (Exception e) {
+            System.err.println("Failed to reconstruct original packet from trojan. Using fallback.");
+            e.printStackTrace();
+            SquarePacket fallbackPacket = new SquarePacket(trojanPacket.getVisualPosition());
+            if (trojanPacket.getCurrentConnection() != null) {
+                fallbackPacket.takeOverPath(trojanPacket);
+            }
+            gs.addPacket(fallbackPacket);
+            gs.removePacket(trojanPacket);
         }
-
-        gs.addPacket(newPacket);
-        gs.removePacket(trojanPacket);
     }
 
     @JsonIgnore

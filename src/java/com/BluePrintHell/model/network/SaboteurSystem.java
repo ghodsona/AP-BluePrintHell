@@ -26,21 +26,18 @@ public class SaboteurSystem extends NetworkSystem {
 
     @Override
     public void receivePacket(Packet packet) {
-        // Packets protected by a VPN are immune
         if (packet instanceof ProtectedPacket) {
             super.receivePacket(packet);
             return;
         }
 
-        // Add noise if the packet is clean
         if (packet.getNoise() == 0) {
             packet.addNoise(1);
         }
 
-        // 25% chance to convert the packet to a Trojan
-        if (random.nextDouble() < TROJAN_CONVERSION_CHANCE) {
+        if (random.nextDouble() < 1.0) { // Using 1.0 for testing as requested
             System.out.println("Packet converted to Trojan!");
-            TrojanPacket trojanPacket = new TrojanPacket(packet.getPosition());
+            TrojanPacket trojanPacket = new TrojanPacket(packet);
             super.receivePacket(trojanPacket);
         } else {
             super.receivePacket(packet);
@@ -57,7 +54,6 @@ public class SaboteurSystem extends NetworkSystem {
         Port targetPort = findOutputPortFor(packetToLaunch);
 
         if (targetPort != null) {
-            // This logic is copied from NormalSystem to correctly launch the packet
             boolean isSpawnAreaClear = true;
             Point2D spawnPosition = targetPort.getCenterPosition();
 

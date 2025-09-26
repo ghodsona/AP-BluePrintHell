@@ -1,0 +1,199 @@
+{
+  "levelNumber" : 1,
+  "playerWireLength" : 2500.0,
+  "playerCoins" : 20,
+  "packetLoss" : 0.0,
+  "gameTime" : 10.832206300000006,
+  "totalPacketsSpawned" : 4,
+  "packetsLost" : 0,
+  "isProgressiveMode" : true,
+  "systems" : [ {
+    "type" : "ReferenceSystem",
+    "@id" : 1,
+    "id" : "source_system",
+    "position" : {
+      "x" : 296.0,
+      "y" : 392.8,
+      "hash" : 0
+    },
+    "inputPorts" : [ ],
+    "outputPorts" : [ {
+      "@id" : 2,
+      "id" : "source_out",
+      "type" : "OUTPUT",
+      "shape" : "SQUARE",
+      "position" : {
+        "x" : 410.0,
+        "y" : 426.8,
+        "hash" : 0
+      },
+      "attachedConnection" : {
+        "@id" : 3,
+        "startPort" : 2,
+        "endPort" : {
+          "@id" : 4,
+          "id" : "sab_a_in",
+          "type" : "INPUT",
+          "shape" : "SQUARE",
+          "position" : {
+            "x" : 444.0,
+            "y" : 434.0,
+            "hash" : 0
+          },
+          "attachedConnection" : 3
+        },
+        "bendPoints" : [ ],
+        "pathPoints" : [ {
+          "x" : 416.0,
+          "y" : 432.8,
+          "hash" : 0
+        }, {
+          "x" : 450.0,
+          "y" : 440.0,
+          "hash" : 0
+        } ]
+      }
+    } ],
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ]
+  }, {
+    "type" : "ReferenceSystem",
+    "@id" : 5,
+    "id" : "destination_system",
+    "position" : {
+      "x" : 840.8,
+      "y" : 346.4,
+      "hash" : 0
+    },
+    "inputPorts" : [ {
+      "@id" : 6,
+      "id" : "dest_in",
+      "type" : "INPUT",
+      "shape" : "SQUARE",
+      "position" : {
+        "x" : 834.8,
+        "y" : 380.4,
+        "hash" : 0
+      },
+      "attachedConnection" : {
+        "@id" : 7,
+        "startPort" : {
+          "@id" : 8,
+          "id" : "sab_a_out",
+          "type" : "OUTPUT",
+          "shape" : "SQUARE",
+          "position" : {
+            "x" : 564.0,
+            "y" : 434.0,
+            "hash" : 0
+          },
+          "attachedConnection" : 7
+        },
+        "endPort" : 6,
+        "bendPoints" : [ ],
+        "pathPoints" : [ {
+          "x" : 570.0,
+          "y" : 440.0,
+          "hash" : 0
+        }, {
+          "x" : 840.8,
+          "y" : 386.4,
+          "hash" : 0
+        } ]
+      }
+    } ],
+    "outputPorts" : [ ],
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ]
+  }, {
+    "type" : "SaboteurSystem",
+    "@id" : 9,
+    "id" : "SABOTEUR_A",
+    "position" : {
+      "x" : 450.0,
+      "y" : 400.0,
+      "hash" : 0
+    },
+    "inputPorts" : [ 4 ],
+    "outputPorts" : [ 8 ],
+    "packetBuffer" : [ {
+      "packetType" : "TrojanPacket",
+      "@id" : 10,
+      "position" : {
+        "x" : 450.0,
+        "y" : 440.0,
+        "hash" : 0
+      },
+      "currentConnection" : null,
+      "destinationPort" : null,
+      "currentSpeed" : 100.0,
+      "noise" : 1.0,
+      "size" : 2,
+      "path" : null,
+      "currentPathIndex" : 0,
+      "originalPacketClass" : "com.BluePrintHell.model.packets.SquarePacket",
+      "coinValue" : -5,
+      "visualPosition" : {
+        "x" : 450.0,
+        "y" : 440.0,
+        "hash" : 0
+      }
+    } ],
+    "justArrivedPackets" : [ ],
+    "random" : {
+      "deprecated" : false
+    }
+  }, {
+    "type" : "AntiTrojanSystem",
+    "@id" : 11,
+    "id" : "ANTI_TROJAN_1",
+    "position" : {
+      "x" : 750.0,
+      "y" : 250.0,
+      "hash" : 0
+    },
+    "inputPorts" : [ ],
+    "outputPorts" : [ ],
+    "packetBuffer" : [ ],
+    "justArrivedPackets" : [ ],
+    "currentCooldown" : 3.9727923999999977
+  } ],
+  "packets" : [ {
+    "packetType" : "SquarePacket",
+    "@id" : 12,
+    "position" : {
+      "x" : 821.9973698478035,
+      "y" : 390.121643191129,
+      "hash" : 0
+    },
+    "currentConnection" : 7,
+    "destinationPort" : 6,
+    "currentSpeed" : 100.0,
+    "noise" : 1.0,
+    "size" : 2,
+    "path" : [ {
+      "x" : 570.0,
+      "y" : 440.0,
+      "hash" : 0
+    }, {
+      "x" : 840.8,
+      "y" : 386.4,
+      "hash" : 0
+    } ],
+    "currentPathIndex" : 0,
+    "coinValue" : 2,
+    "visualPosition" : {
+      "x" : 821.9973698478035,
+      "y" : 390.121643191129,
+      "hash" : 0
+    }
+  } ],
+  "packetsToRemove" : [ ],
+  "connections" : [ 3, 7 ],
+  "spawnEvents" : [ ],
+  "packetsSucceeded" : 2,
+  "activePowerUps" : [ ],
+  "largePacketRegistry" : { },
+  "sourceSystem" : 1,
+  "destinationSystem" : 5
+}
