@@ -17,6 +17,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -39,7 +40,7 @@ public class GameController {
     private Button runButton;
     private long lastSaveTime = 0;
     private static final long SAVE_INTERVAL_NANO = 5_000_000_000L;
-
+    private Image protectedPacketImage;
     private NetworkSystem selectedSystem = null;
     private double offsetX, offsetY;
 
@@ -70,6 +71,16 @@ public class GameController {
             System.err.println("FATAL: GameState is null.");
             return;
         }
+
+        try {
+            String imagePath = "/com/BluePrintHell/view/images/PROTECTED.png";
+            protectedPacketImage = new Image(getClass().getResourceAsStream(imagePath));
+            System.out.println("Protected packet image loaded successfully.");
+        } catch (Exception e) {
+            System.err.println("Failed to load protected_packet.png. Using fallback color.");
+            protectedPacketImage = null;
+        }
+
         this.gc = gameCanvas.getGraphicsContext2D();
         gameCanvas.setOnMousePressed(this::onMousePressed);
         gameCanvas.setOnMouseDragged(this::onMouseDragged);
@@ -541,12 +552,19 @@ public class GameController {
             gc.fillOval(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
 
         } else if (packet instanceof ProtectedPacket) {
-            gc.setFill(Color.CYAN);
-            gc.fillRect(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
-            gc.setEffect(new DropShadow(15, Color.CYAN));
-            gc.setStroke(Color.WHITE);
-            gc.strokeRect(pos.getX() - size / 2 - 2, pos.getY() - size / 2 - 2, size + 4, size + 4);
-            gc.setEffect(null);
+            if (protectedPacketImage != null) {
+                // Draw the image if it was loaded successfully
+                double imageSize = 24; // You can adjust the size
+                gc.drawImage(protectedPacketImage, pos.getX() - imageSize / 2, pos.getY() - imageSize / 2, imageSize, imageSize);
+            } else {
+                // Fallback to the original drawing method if the image is missing
+                gc.setFill(Color.CYAN);
+                gc.fillRect(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
+                gc.setEffect(new DropShadow(15, Color.CYAN));
+                gc.setStroke(Color.WHITE);
+                gc.strokeRect(pos.getX() - size / 2 - 2, pos.getY() - size / 2 - 2, size + 4, size + 4);
+                gc.setEffect(null);
+            }
 
         } else if (packet instanceof TrojanPacket) {
             size = 12;

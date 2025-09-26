@@ -1,7 +1,7 @@
 {
   "levelNumber": 1,
-  "levelName": "Anti-Trojan System Test",
-  "initialWireLength": 2500.0,
+  "levelName": "VPN System Test",
+  "initialWireLength": 3000.0,
   "initialCoins": 20,
   "systems": [
     {
@@ -13,34 +13,32 @@
       "outputPorts": [{"id": "source_out", "shape": "SQUARE"}]
     },
     {
-      "id": "destination_system",
-      "type": "REFERENCE",
-      "x": 1100,
+      "id": "VPN_A",
+      "type": "VPNSYSTEM",
+      "x": 400,
       "y": 400,
-      "inputPorts": [{"id": "dest_in", "shape": "SQUARE"}],
-      "outputPorts": []
+      "inputPorts": [{"id": "vpn_a_in", "shape": "SQUARE"}],
+      "outputPorts": [{"id": "vpn_a_out", "shape": "SQUARE"}]
     },
     {
       "id": "SABOTEUR_A",
       "type": "SABOTEURSYSTEM",
-      "x": 450,
+      "x": 700,
       "y": 400,
       "inputPorts": [{"id": "sab_a_in", "shape": "SQUARE"}],
       "outputPorts": [{"id": "sab_a_out", "shape": "SQUARE"}]
     },
     {
-      "id": "ANTI_TROJAN_1",
-      "type": "ANTITROJANSYSTEM",
-      "x": 750,
-      "y": 250,
-      "inputPorts": [],
+      "id": "destination_system",
+      "type": "REFERENCE",
+      "x": 1000,
+      "y": 400,
+      "inputPorts": [{"id": "dest_in", "shape": "SQUARE"}],
       "outputPorts": []
     }
   ],
   "spawnEvents": [
     {"spawnTime": 2.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"},
-    {"spawnTime": 3.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"},
-    {"spawnTime": 4.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"},
-    {"spawnTime": 5.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"}
+    {"spawnTime": 4.0, "sourceSystemId": "source_system", "packetType": "TRIANGLE_MESSENGER"}
   ]
 }
