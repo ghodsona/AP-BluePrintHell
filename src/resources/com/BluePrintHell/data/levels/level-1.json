@@ -1,8 +1,8 @@
 {
   "levelNumber": 1,
-  "levelName": "Basic Network",
+  "levelName": "Spy System Test",
   "initialWireLength": 2000.0,
-  "initialCoins": 15,
+  "initialCoins": 20,
   "systems": [
     {
       "id": "source_system",
@@ -10,19 +10,34 @@
       "x": 100,
       "y": 400,
       "inputPorts": [],
-      "outputPorts": [{"id": "source_out_1", "shape": "SQUARE"}]
+      "outputPorts": [{"id": "source_out", "shape": "SQUARE"}]
     },
     {
       "id": "destination_system",
       "type": "REFERENCE",
       "x": 1100,
       "y": 400,
-      "inputPorts": [{"id": "dest_in_1", "shape": "SQUARE"}],
+      "inputPorts": [{"id": "dest_in", "shape": "SQUARE"}],
       "outputPorts": []
+    },
+    {
+      "id": "SPY_A",
+      "type": "SPYSYSTEM",
+      "x": 400,
+      "y": 200,
+      "inputPorts": [{"id": "spy_a_in", "shape": "SQUARE"}],
+      "outputPorts": [{"id": "spy_a_out", "shape": "SQUARE"}]
+    },
+    {
+      "id": "SPY_B",
+      "type": "SPYSYSTEM",
+      "x": 800,
+      "y": 600,
+      "inputPorts": [{"id": "spy_b_in", "shape": "SQUARE"}],
+      "outputPorts": [{"id": "spy_b_out", "shape": "SQUARE"}]
     }
   ],
   "spawnEvents": [
-    {"spawnTime": 2.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"},
-    {"spawnTime": 4.0, "sourceSystemId": "source_system", "packetType": "TRIANGLE_MESSENGER"}
+    {"spawnTime": 2.0, "sourceSystemId": "source_system", "packetType": "SQUARE_MESSENGER"}
   ]
 }

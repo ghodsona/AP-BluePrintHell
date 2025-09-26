@@ -424,26 +424,33 @@ public class GameController {
             case "SQUARE_MESSENGER": return new SquarePacket(position);
             case "TRIANGLE_MESSENGER": return new TrianglePacket(position);
             case "CIRCLE_MESSENGER": return new CirclePacket(position);
-            default: return null;
+            case "LargePacketTypeA": return new LargePacketTypeA(position);
+            case "LargePacketTypeB": return new LargePacketTypeB(position);
+            default:
+                System.err.println("Unknown packet type in level data: " + packetType);
+                return null;
         }
     }
 
     private void handlePacketSpawning() {
         if (gameState.getSpawnEvents().isEmpty()) return;
-        SpawnEventData nextEvent = gameState.getSpawnEvents().get(0);
-        if (gameState.getGameTime() >= nextEvent.getSpawnTime()) {
-            NetworkSystem sourceSystem = gameState.getSystems().stream()
-                    .filter(s -> s.getId().equals(nextEvent.getSourceSystemId())).findFirst().orElse(null);
-            if (sourceSystem != null) {
-                Packet newPacket = createPacketFromType(nextEvent.getPacketType(), new Point2D(0, 0));
-                if (newPacket != null) {
-                    System.out.println("DEBUG: Spawning packet " + newPacket.hashCode() + " of type " + nextEvent.getPacketType() + " at system " + sourceSystem.getId());
-                    sourceSystem.receivePacket(newPacket);
-                    gameState.incrementTotalPacketsSpawned();
+        List<SpawnEventData> eventsToRemove = new ArrayList<>();
+        for (SpawnEventData nextEvent : gameState.getSpawnEvents()) {
+            if (gameState.getGameTime() >= nextEvent.getSpawnTime()) {
+                NetworkSystem sourceSystem = gameState.getSystems().stream()
+                        .filter(s -> s.getId().equals(nextEvent.getSourceSystemId())).findFirst().orElse(null);
+                if (sourceSystem != null) {
+                    Packet newPacket = createPacketFromType(nextEvent.getPacketType(), new Point2D(0, 0));
+                    if (newPacket != null) {
+                        System.out.println("DEBUG: Spawning packet " + newPacket.hashCode() + " of type " + nextEvent.getPacketType() + " at system " + sourceSystem.getId());
+                        sourceSystem.receivePacket(newPacket);
+                        gameState.incrementTotalPacketsSpawned();
+                    }
                 }
+                eventsToRemove.add(nextEvent);
             }
-            gameState.getSpawnEvents().remove(0);
         }
+        gameState.getSpawnEvents().removeAll(eventsToRemove);
     }
 
     private void drawSystem(NetworkSystem system) {
@@ -474,7 +481,7 @@ public class GameController {
             systemLabel = "ANTI-T";
         } else if (system instanceof ReferenceSystem) {
             systemColor = Color.web("#333333");
-            systemLabel = system.getId().contains("source") ? "SOURCE" : "DEST";
+            systemLabel = system.getId().contains("SOURCE") ? "SOURCE" : "DEST";
         }
 
 

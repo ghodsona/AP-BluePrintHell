@@ -1,10 +1,10 @@
 {
-  "levelNumber" : 3,
+  "levelNumber" : 1,
   "playerWireLength" : 2000.0,
-  "playerCoins" : 25,
+  "playerCoins" : 22,
   "packetLoss" : 0.0,
-  "gameTime" : 0.0,
-  "totalPacketsSpawned" : 4,
+  "gameTime" : 11.750097099999994,
+  "totalPacketsSpawned" : 1,
   "packetsLost" : 0,
   "isProgressiveMode" : true,
   "systems" : [ {
@@ -19,7 +19,7 @@
     "inputPorts" : [ ],
     "outputPorts" : [ {
       "@id" : 2,
-      "id" : "source_out_1",
+      "id" : "source_out",
       "type" : "OUTPUT",
       "shape" : "SQUARE",
       "position" : {
@@ -32,12 +32,12 @@
         "startPort" : 2,
         "endPort" : {
           "@id" : 4,
-          "id" : "relay1_in",
+          "id" : "spy_a_in",
           "type" : "INPUT",
           "shape" : "SQUARE",
           "position" : {
-            "x" : 237.20000000000005,
-            "y" : 424.40000000000003,
+            "x" : 394.0,
+            "y" : 234.0,
             "hash" : 0
           },
           "attachedConnection" : 3
@@ -48,8 +48,8 @@
           "y" : 440.0,
           "hash" : 0
         }, {
-          "x" : 243.20000000000005,
-          "y" : 430.40000000000003,
+          "x" : 400.0,
+          "y" : 240.0,
           "hash" : 0
         } ]
       }
@@ -61,117 +61,93 @@
     "@id" : 5,
     "id" : "destination_system",
     "position" : {
-      "x" : 919.9999999999999,
-      "y" : 425.59999999999997,
+      "x" : 962.4000000000001,
+      "y" : 371.2,
       "hash" : 0
     },
     "inputPorts" : [ {
       "@id" : 6,
-      "id" : "dest_in_1",
+      "id" : "dest_in",
       "type" : "INPUT",
       "shape" : "SQUARE",
       "position" : {
-        "x" : 913.9999999999999,
-        "y" : 459.59999999999997,
+        "x" : 956.4000000000001,
+        "y" : 405.2,
         "hash" : 0
       },
-      "attachedConnection" : null
+      "attachedConnection" : {
+        "@id" : 7,
+        "startPort" : {
+          "@id" : 8,
+          "id" : "spy_b_out",
+          "type" : "OUTPUT",
+          "shape" : "SQUARE",
+          "position" : {
+            "x" : 914.0,
+            "y" : 634.0,
+            "hash" : 0
+          },
+          "attachedConnection" : 7
+        },
+        "endPort" : 6,
+        "bendPoints" : [ ],
+        "pathPoints" : [ {
+          "x" : 920.0,
+          "y" : 640.0,
+          "hash" : 0
+        }, {
+          "x" : 962.4000000000001,
+          "y" : 411.2,
+          "hash" : 0
+        } ]
+      }
     } ],
     "outputPorts" : [ ],
     "packetBuffer" : [ ],
     "justArrivedPackets" : [ ]
   }, {
-    "type" : "NormalSystem",
-    "@id" : 7,
-    "id" : "relay_system_1",
+    "type" : "SpySystem",
+    "@id" : 9,
+    "id" : "SPY_A",
     "position" : {
-      "x" : 243.20000000000005,
-      "y" : 390.40000000000003,
+      "x" : 400.0,
+      "y" : 200.0,
       "hash" : 0
     },
     "inputPorts" : [ 4 ],
     "outputPorts" : [ {
-      "@id" : 8,
-      "id" : "relay1_out",
+      "@id" : 10,
+      "id" : "spy_a_out",
       "type" : "OUTPUT",
       "shape" : "SQUARE",
       "position" : {
-        "x" : 357.20000000000005,
-        "y" : 424.40000000000003,
+        "x" : 514.0,
+        "y" : 234.0,
         "hash" : 0
       },
       "attachedConnection" : {
-        "@id" : 9,
-        "startPort" : 8,
+        "@id" : 11,
+        "startPort" : 10,
         "endPort" : {
-          "@id" : 10,
-          "id" : "relay2_in",
-          "type" : "INPUT",
-          "shape" : "TRIANGLE",
-          "position" : {
-            "x" : 383.59999999999997,
-            "y" : 427.59999999999997,
-            "hash" : 0
-          },
-          "attachedConnection" : 9
-        },
-        "bendPoints" : [ ],
-        "pathPoints" : [ {
-          "x" : 363.20000000000005,
-          "y" : 430.40000000000003,
-          "hash" : 0
-        }, {
-          "x" : 389.59999999999997,
-          "y" : 433.59999999999997,
-          "hash" : 0
-        } ]
-      }
-    } ],
-    "packetBuffer" : [ ],
-    "justArrivedPackets" : [ ]
-  }, {
-    "type" : "NormalSystem",
-    "@id" : 11,
-    "id" : "relay_system_2",
-    "position" : {
-      "x" : 389.59999999999997,
-      "y" : 393.59999999999997,
-      "hash" : 0
-    },
-    "inputPorts" : [ 10 ],
-    "outputPorts" : [ {
-      "@id" : 12,
-      "id" : "relay2_out",
-      "type" : "OUTPUT",
-      "shape" : "TRIANGLE",
-      "position" : {
-        "x" : 503.59999999999997,
-        "y" : 427.59999999999997,
-        "hash" : 0
-      },
-      "attachedConnection" : {
-        "@id" : 13,
-        "startPort" : 12,
-        "endPort" : {
-          "@id" : 14,
-          "id" : "sb_i",
+          "@id" : 12,
+          "id" : "spy_b_in",
           "type" : "INPUT",
           "shape" : "SQUARE",
           "position" : {
-            "x" : 547.6,
-            "y" : 434.00000000000006,
+            "x" : 794.0,
+            "y" : 634.0,
             "hash" : 0
           },
-          "attachedConnection" : 13
+          "attachedConnection" : 11
         },
         "bendPoints" : [ ],
         "pathPoints" : [ {
-          "x" : 509.59999999999997,
-          "y" : 433.59999999999997,
+          "x" : 520.0,
+          "y" : 240.0,
           "hash" : 0
         }, {
-          "x" : 553.6,
-          "y" : 440.00000000000006,
+          "x" : 800.0,
+          "y" : 640.0,
           "hash" : 0
         } ]
       }
@@ -180,89 +156,54 @@
     "justArrivedPackets" : [ ]
   }, {
     "type" : "SpySystem",
-    "@id" : 15,
-    "id" : "SPY_A",
-    "position" : {
-      "x" : 727.2,
-      "y" : 380.0,
-      "hash" : 0
-    },
-    "inputPorts" : [ {
-      "@id" : 16,
-      "id" : "sa_i",
-      "type" : "INPUT",
-      "shape" : "SQUARE",
-      "position" : {
-        "x" : 721.2,
-        "y" : 414.0,
-        "hash" : 0
-      },
-      "attachedConnection" : {
-        "@id" : 17,
-        "startPort" : {
-          "@id" : 18,
-          "id" : "sb_o",
-          "type" : "OUTPUT",
-          "shape" : "SQUARE",
-          "position" : {
-            "x" : 667.6,
-            "y" : 434.00000000000006,
-            "hash" : 0
-          },
-          "attachedConnection" : 17
-        },
-        "endPort" : 16,
-        "bendPoints" : [ ],
-        "pathPoints" : [ {
-          "x" : 673.6,
-          "y" : 440.00000000000006,
-          "hash" : 0
-        }, {
-          "x" : 727.2,
-          "y" : 420.0,
-          "hash" : 0
-        } ]
-      }
-    } ],
-    "outputPorts" : [ {
-      "@id" : 19,
-      "id" : "sa_o",
-      "type" : "OUTPUT",
-      "shape" : "SQUARE",
-      "position" : {
-        "x" : 841.2,
-        "y" : 414.0,
-        "hash" : 0
-      },
-      "attachedConnection" : null
-    } ],
-    "packetBuffer" : [ ],
-    "justArrivedPackets" : [ ]
-  }, {
-    "type" : "SpySystem",
-    "@id" : 20,
+    "@id" : 13,
     "id" : "SPY_B",
     "position" : {
-      "x" : 553.6,
-      "y" : 400.00000000000006,
+      "x" : 800.0,
+      "y" : 600.0,
       "hash" : 0
     },
-    "inputPorts" : [ 14 ],
-    "outputPorts" : [ 18 ],
+    "inputPorts" : [ 12 ],
+    "outputPorts" : [ 8 ],
     "packetBuffer" : [ ],
     "justArrivedPackets" : [ ]
   } ],
-  "packets" : [ ],
-  "packetsToRemove" : [ ],
-  "connections" : [ 3, 9, 13, 17 ],
-  "spawnEvents" : [ {
-    "spawnTime" : 1.0,
-    "sourceSystemId" : "SRC",
-    "packetType" : "SQUARE_MESSENGER"
+  "packets" : [ {
+    "packetType" : "SquarePacket",
+    "@id" : 14,
+    "position" : {
+      "x" : 959.5635366398249,
+      "y" : 426.5061985096229,
+      "hash" : 0
+    },
+    "currentConnection" : 7,
+    "destinationPort" : 6,
+    "currentSpeed" : 50.0,
+    "noise" : 0.0,
+    "size" : 2,
+    "path" : [ {
+      "x" : 920.0,
+      "y" : 640.0,
+      "hash" : 0
+    }, {
+      "x" : 962.4000000000001,
+      "y" : 411.2,
+      "hash" : 0
+    } ],
+    "currentPathIndex" : 0,
+    "coinValue" : 2,
+    "visualPosition" : {
+      "x" : 959.5635366398249,
+      "y" : 426.5061985096229,
+      "hash" : 0
+    }
   } ],
-  "packetsSucceeded" : 4,
+  "packetsToRemove" : [ ],
+  "connections" : [ 3, 11, 7 ],
+  "spawnEvents" : [ ],
+  "packetsSucceeded" : 0,
   "activePowerUps" : [ ],
   "largePacketRegistry" : { },
-  "sourceSystem" : 1,
-  "destinationSystem" : 5
+  "destinationSystem" : 5,
+  "sourceSystem" : 1
 }
