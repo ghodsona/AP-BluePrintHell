@@ -40,7 +40,11 @@ public class GameController {
     private Button runButton;
     private long lastSaveTime = 0;
     private static final long SAVE_INTERVAL_NANO = 5_000_000_000L;
+
     private Image protectedPacketImage;
+    private Image confidentialPacketImage;
+    private Image protectedConfidentialPacketImage;
+
     private NetworkSystem selectedSystem = null;
     private double offsetX, offsetY;
 
@@ -79,6 +83,23 @@ public class GameController {
         } catch (Exception e) {
             System.err.println("Failed to load protected_packet.png. Using fallback color.");
             protectedPacketImage = null;
+        }
+        try {
+            String confidentialImagePath = "/com/BluePrintHell/view/images/CONFIDENTIAL.png";
+            confidentialPacketImage = new Image(getClass().getResourceAsStream(confidentialImagePath));
+            System.out.println("Confidential packet image loaded successfully.");
+        } catch (Exception e) {
+            System.err.println("Failed to load CONFIDENTIAL.png. Using fallback color.");
+            confidentialPacketImage = null;
+        }
+
+        try {
+            String protectedConfidentialImagePath = "/com/BluePrintHell/view/images/PROTECTED_CONFIDENTIAL.png";
+            protectedConfidentialPacketImage = new Image(getClass().getResourceAsStream(protectedConfidentialImagePath));
+            System.out.println("Protected Confidential packet image loaded successfully.");
+        } catch (Exception e) {
+            System.err.println("Failed to load PROTECTED_CONFIDENTIAL.png. Will use general protected image or fallback.");
+            protectedConfidentialPacketImage = null;
         }
 
         this.gc = gameCanvas.getGraphicsContext2D();
@@ -433,6 +454,8 @@ public class GameController {
     private Packet createPacketFromType(String packetType, Point2D position) {
         switch (packetType) {
             case "SQUARE_MESSENGER": return new SquarePacket(position);
+            case "CONFIDENTIAL_MESSENGER": return new ConfidentialPacket(position);
+            case "PROTECTED_CONFIDENTIAL": return new ProtectedConfidentialPacket(position);
             case "TRIANGLE_MESSENGER": return new TrianglePacket(position);
             case "CIRCLE_MESSENGER": return new CirclePacket(position);
             case "LargePacketTypeA": return new LargePacketTypeA(position);
@@ -584,7 +607,33 @@ public class GameController {
         } else if (packet instanceof CirclePacket) {
             gc.setFill(Color.ORANGE);
             gc.fillOval(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
-        } else {
+        }
+        else if (packet instanceof ProtectedConfidentialPacket) {
+            if (protectedConfidentialPacketImage != null) {
+                double imageSize = 24;
+                gc.drawImage(protectedConfidentialPacketImage, pos.getX() - imageSize / 2, pos.getY() - imageSize / 2, imageSize, imageSize);
+            } else {
+                // Fallback: استفاده از تصویر ProtectedPacket یا رنگ آبی تیره
+                Image fallback = protectedPacketImage != null ? protectedPacketImage : null;
+                if (fallback != null) {
+                    double imageSize = 24;
+                    gc.drawImage(fallback, pos.getX() - imageSize / 2, pos.getY() - imageSize / 2, imageSize, imageSize);
+                } else {
+                    gc.setFill(Color.CYAN.darker());
+                    gc.fillRect(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
+                }
+            }
+        }
+        else if (packet instanceof ConfidentialPacket) {
+            if (confidentialPacketImage != null) {
+                double imageSize = 18;
+                gc.drawImage(confidentialPacketImage, pos.getX() - imageSize / 2, pos.getY() - imageSize / 2, imageSize, imageSize);
+            } else {
+                gc.setFill(Color.web("#a0a0a0", 0.7));
+                gc.fillOval(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
+            }
+        }
+        else {
             gc.setFill(Color.WHITE);
             gc.fillOval(pos.getX() - size / 2, pos.getY() - size / 2, size, size);
         }

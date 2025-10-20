@@ -5,9 +5,8 @@ import com.BluePrintHell.model.LargePacketInfo;
 import com.BluePrintHell.model.packets.BitPacket;
 import com.BluePrintHell.model.packets.LargePacket;
 import com.BluePrintHell.model.packets.Packet;
-import com.fasterxml.jackson.annotation.JsonIgnore; // <-- ایمپورت جدید
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.geometry.Point2D;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class MergeSystem extends NormalSystem {
-
+    protected static final int BUFFER_CAPACITY = 15;
     private final Map<UUID, List<BitPacket>> collectedBitPackets = new HashMap<>();
 
     public MergeSystem(String id, Point2D position) {

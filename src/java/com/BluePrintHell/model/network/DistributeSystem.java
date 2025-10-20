@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Random;
 
 public class DistributeSystem extends NormalSystem {
-
+    protected static final int BUFFER_CAPACITY = 15;
     private final Random random = new Random();
 
     public DistributeSystem(String id, Point2D position) {
@@ -45,11 +45,11 @@ public class DistributeSystem extends NormalSystem {
                 }
             }
 
-            // یکی از پورت‌ها را به صورت تصادفی تغییر شکل می‌دهد
+            // Randomize one of the port shapes
             randomizeAPortShape();
 
         } else {
-            // اگر پکت عادی بود، مانند NormalSystem رفتار می‌کند
+            // If it's a normal packet, behave like a NormalSystem
             super.receivePacket(packet);
         }
     }
@@ -60,18 +60,14 @@ public class DistributeSystem extends NormalSystem {
         allPorts.addAll(getOutputPorts());
 
         if (!allPorts.isEmpty()) {
-            // یک پورت را به صورت تصادفی انتخاب می‌کند
             Port portToChange = allPorts.get(random.nextInt(allPorts.size()));
-
-            // یک شکل جدید به صورت تصادفی انتخاب می‌کند
             PortShape[] shapes = PortShape.values();
             PortShape newShape = shapes[random.nextInt(shapes.length)];
 
-            // چون PortShape در کلاس Port به صورت private تعریف شده و setter ندارد،
-            // باید یک متد setter در کلاس Port اضافه کنیم.
-            // portToChange.setShape(newShape); // فرض بر اینکه متد setShape وجود دارد
+            // **FIX: This line was commented out, now it's active.**
+            portToChange.setShape(newShape);
 
-            System.out.println("Port " + portToChange.getId() + " changed shape to " + newShape);
+            System.out.println("DEBUG: Port " + portToChange.getId() + " changed shape to " + newShape);
         }
     }
 

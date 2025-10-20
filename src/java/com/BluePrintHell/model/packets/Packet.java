@@ -23,10 +23,12 @@ import com.BluePrintHell.model.packets.ProtectedPacket;
         @JsonSubTypes.Type(value = SquarePacket.class, name = "SquarePacket"),
         @JsonSubTypes.Type(value = TrianglePacket.class, name = "TrianglePacket"),
         @JsonSubTypes.Type(value = CirclePacket.class, name = "CirclePacket"),
-        @JsonSubTypes.Type(value = TrojanPacket.class, name = "TrojanPacket"), // <-- این خط اضافه شود
-        @JsonSubTypes.Type(value = ProtectedPacket.class, name = "ProtectedPacket"), // <-- این خط اضافه شود
+        @JsonSubTypes.Type(value = TrojanPacket.class, name = "TrojanPacket"),
+        @JsonSubTypes.Type(value = ProtectedPacket.class, name = "ProtectedPacket"),
         @JsonSubTypes.Type(value = LargePacketTypeA.class, name = "LargePacketTypeA"),
         @JsonSubTypes.Type(value = LargePacketTypeB.class, name = "LargePacketTypeB"),
+        @JsonSubTypes.Type(value = ConfidentialPacket.class, name = "ConfidentialPacket"),
+        @JsonSubTypes.Type(value = ProtectedConfidentialPacket.class, name = "ProtectedConfidentialPacket"),
         @JsonSubTypes.Type(value = BitPacket.class, name = "BitPacket")
 })
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@id")
